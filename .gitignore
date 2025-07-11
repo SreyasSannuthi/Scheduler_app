@@ -1,0 +1,17 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Environment-dependent path to Maven home directory
+/mavenHomeManager.xml
+
+# Environment files (but NOT application.properties)
+.env
+.env.local
+.env.production
+**/.env
+
+# IDE specific files
+.idea/.env
+*.iml
+*.iws
+*.ipr
