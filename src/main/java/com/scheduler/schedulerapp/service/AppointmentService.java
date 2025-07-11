@@ -51,6 +51,10 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
+    public List<Appointment> getAppointmentsByDateRange(LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByStartTimeBetween(start, end);
+    }
+
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
