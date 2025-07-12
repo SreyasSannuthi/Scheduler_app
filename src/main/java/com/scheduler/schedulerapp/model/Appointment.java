@@ -21,25 +21,12 @@ public class Appointment {
 
     @Id
     private String id;
-
-    @NotBlank(message = "Title is required")
     private String title;
-
     private String description;
-
-    @NotBlank(message = "User ID is required")
     private String userId;
-
-    @NotNull(message = "Start time is required")
     private LocalDateTime startTime;
-
-    @NotNull(message = "End time is required")
     private LocalDateTime endTime;
-
-    @Pattern(regexp = "scheduled|cancelled|completed", message = "Invalid status")
     private String status = "scheduled";
-
-    @Pattern(regexp = "work|personal|medical|education|social", message = "Invalid category")
     private String category = "work";
 
     @AssertTrue(message = "End time must be after start time")
