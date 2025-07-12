@@ -125,10 +125,6 @@ public class AppointmentResolver {
             throw new IllegalArgumentException("Cannot create appointments in the past");
         }
 
-        if (endTime.isBefore(startTime)) {
-            throw new IllegalArgumentException("End time must be after start time");
-        }
-
         Appointment appointment = new Appointment();
         appointment.setTitle(input.getTitle());
         appointment.setDescription(input.getDescription());

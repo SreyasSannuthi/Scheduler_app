@@ -28,15 +28,5 @@ public class Appointment {
     private LocalDateTime endTime;
     private String status = "scheduled";
     private String category = "work";
-
-    @AssertTrue(message = "End time must be after start time")
-    public boolean isValidTimeRange() {
-        return endTime == null || startTime == null || endTime.isAfter(startTime);
-    }
-
-    @AssertTrue(message = "Appointment duration cannot exceed 4 hours")
-    public boolean isValidDuration() {
-        if (startTime == null || endTime == null) return true;
-        return Duration.between(startTime, endTime).toHours() <= 4;
-    }
+    
 }
