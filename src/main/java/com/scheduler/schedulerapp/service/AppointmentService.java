@@ -55,6 +55,10 @@ public class AppointmentService {
         return appointmentRepository.findByStartTimeBetween(start, end);
     }
 
+    public List<Appointment> getAppointmentsByUserAndDateRange(String userId, LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByUserIdAndStartTimeBetween(userId, start, end);
+    }
+
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
@@ -73,5 +77,13 @@ public class AppointmentService {
 
     public void deleteMultipleAppointments(List<String> ids) {
         appointmentRepository.deleteAllById(ids);
+    }
+
+    public List<Appointment> getAppointmentsByCategory(String category) {
+        return appointmentRepository.findByCategory(category);
+    }
+
+    public List<Appointment> getAppointmentsByStatus(String status) {
+        return appointmentRepository.findByStatus(status);
     }
 }

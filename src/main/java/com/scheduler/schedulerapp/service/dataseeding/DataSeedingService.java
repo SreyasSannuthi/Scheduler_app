@@ -24,18 +24,18 @@ public class DataSeedingService {
     private void seedUsers() {
         if (userRepository.count() == 0) {
             List<User> users = Arrays.asList(
-                    new User(null, "Sreyas Sannuthi", "admin@scheduler.in", "admin", true),
+                    new User(null, "Sreyas Sannuthi", "admin@scheduler.in", "admin"),
 
-                    new User(null, "Vibhor Gupta", "vibhor@scheduler.in", "user", true),
-                    new User(null, "Arnav Saharan", "arnav@scheduler.in", "user", true),
-                    new User(null, "Mayank Pal", "mayank@scheduler.in", "user", true),
-                    new User(null, "Shubradip Saha", "shubradip@scheduler.in", "user", true),
-                    new User(null, "Prateek Jain", "prateek@scheduler.in", "user", true),
-                    new User(null, "Yash Goyal", "yash@scheduler.in", "user", true),
-                    new User(null, "Ravi Kumar", "ravi@scheduler.in", "user", true),
-                    new User(null, "Ankit Sharma", "ankit@scheduler.in", "user", true),
-                    new User(null, "Yuvaraj Singh", "neha@scheduler.in", "user", true),
-                    new User(null, "Rohit Verma", "rohit@scheduler.in", "user", true)
+                    new User(null, "Vibhor Gupta", "vibhor@scheduler.in", "user"),
+                    new User(null, "Arnav Saharan", "arnav@scheduler.in", "user"),
+                    new User(null, "Mayank Pal", "mayank@scheduler.in", "user"),
+                    new User(null, "Shubradip Saha", "shubradip@scheduler.in", "user"),
+                    new User(null, "Prateek Jain", "prateek@scheduler.in", "user"),
+                    new User(null, "Yash Goyal", "yash@scheduler.in", "user"),
+                    new User(null, "Ravi Kumar", "ravi@scheduler.in", "user"),
+                    new User(null, "Ankit Sharma", "ankit@scheduler.in", "user"),
+                    new User(null, "Yuvaraj Singh", "neha@scheduler.in", "user"),
+                    new User(null, "Rohit Verma", "rohit@scheduler.in", "user")
             );
 
             userRepository.saveAll(users);

@@ -25,4 +25,9 @@ public class UserResolver {
     public Optional<User> user(@Argument String id) {
         return userRepository.findById(id);
     }
+
+    @QueryMapping
+    public List<User> usersByRole(@Argument String role) {
+        return userRepository.findByRole(role);
+    }
 }

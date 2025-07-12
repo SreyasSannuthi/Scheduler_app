@@ -3,7 +3,6 @@ type User{
     name: String!
     email: String!
     role: String!
-    isActive: Boolean!
 }
 
 type Appointment {
@@ -37,23 +36,23 @@ input AppointmentUpdateInput {
 }
 
 type Query {
-
     users: [User!]!
     user(id: ID!): User
+    usersByRole(role: String!): [User!]!
 
-    appointments: [Appointment!]!
-    appointmentsByUser(userId: ID!): [Appointment!]!
-    appointmentsByDateRange(startDate: String!, endDate: String!): [Appointment!]!
-    appointmentsByUserAndDateRange(userId: ID!, startDate: String!, endDate: String!): [Appointment!]!
-    appointmentById(id: ID!): Appointment
-    appointmentsByCategory(category: String!): [Appointment!]!
-    appointmentsByStatus(status: String!): [Appointment!]!
-    checkCollision(userId: ID!, startTime: String!, endTime: String!): [Appointment!]!
+    appointments(requestingUserId: String!): [Appointment!]!
+    appointmentsByUser(userId: String!, requestingUserId: String!): [Appointment!]!
+    appointmentById(id: ID!, requestingUserId: String!): Appointment
+    appointmentsByDateRange(startDate: String!, endDate: String!, requestingUserId: String!): [Appointment!]!
+    appointmentsByUserAndDateRange(userId: String!, startDate: String!, endDate: String!, requestingUserId: String!): [Appointment!]!
+    appointmentsByCategory(category: String!, requestingUserId: String!): [Appointment!]!
+    appointmentsByStatus(status: String!, requestingUserId: String!): [Appointment!]!
+    checkCollision(userId: String!, startTime: String!, endTime: String!, requestingUserId: String!): [Appointment!]!
 }
 
 type Mutation {
-    createAppointment(input: AppointmentInput!): Appointment!
-    updateAppointment(id: ID!, input: AppointmentUpdateInput!): Appointment!
-    deleteAppointment(id: ID!): Boolean!
-    deleteMultipleAppointments(ids: [ID!]!): Boolean!
+    createAppointment(input: AppointmentInput!, requestingUserId: String!): Appointment!
+    updateAppointment(id: ID!, input: AppointmentUpdateInput!, requestingUserId: String!): Appointment!
+    deleteAppointment(id: ID!, requestingUserId: String!): Boolean!
+    deleteMultipleAppointments(ids: [ID!]!, requestingUserId: String!): Boolean!
 }

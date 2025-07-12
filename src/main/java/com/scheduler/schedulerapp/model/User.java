@@ -30,6 +30,4 @@ public class User {
     @NotBlank(message = "Role cannot be blank")
     @Pattern(regexp = "admin|user", message = "Role must be either 'admin' or 'user'")
     private String role;
-
-    private boolean isActive =true;
 }

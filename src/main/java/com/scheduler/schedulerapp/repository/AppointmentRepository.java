@@ -27,5 +27,4 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
             "{ 'status': 'scheduled' } ] }")
     List<Appointment> findCollision(String userId, LocalDateTime startTime, LocalDateTime endTime);
 
-    long countByUserId(String userId);
 }
