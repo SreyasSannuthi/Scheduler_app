@@ -1,4 +1,4 @@
-package com.scheduler.schedulerapp.service;
+package com.scheduler.schedulerapp.service.user;
 
 import com.scheduler.schedulerapp.model.User;
 import java.util.List;

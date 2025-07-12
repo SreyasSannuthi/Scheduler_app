@@ -3,7 +3,7 @@ package com.scheduler.schedulerapp.dto;
 import lombok.Data;
 
 @Data
-public class AppointmentUpdateInput {
+public class AppointmentUpdateInputDTO {
     private String title;
     private String description;
     private String startTime;

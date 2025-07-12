@@ -3,6 +3,7 @@ type User {
     name: String!
     email: String!
     role: String!
+    displayName: String!
 }
 
 type Appointment {
@@ -10,10 +11,13 @@ type Appointment {
     title: String!
     description: String
     userId: String!
+    userName: String!
     startTime: String!
     endTime: String!
     status: String!
     category: String!
+    categoryColor: String!
+    duration: String!
 }
 
 input AppointmentInput {
@@ -52,7 +56,7 @@ type Query {
 
 type Mutation {
     createAppointment(input: AppointmentInput!, userId: ID!): Appointment!
-    updateAppointment(appointmentId: ID!, input: AppointmentUpdateInput!, userId: ID!): Appointment!
-    deleteAppointment(appointmentId: ID!, userId: ID!): Boolean!
-    deleteMultipleAppointments(appointmentIds: [ID!]!, userId: ID!): Boolean!
+    updateAppointment(id: ID!, input: AppointmentUpdateInput!, userId: ID!): Appointment!
+    deleteAppointment(id: ID!, userId: ID!): Boolean!
+    deleteMultipleAppointments(ids: [ID!]!, userId: ID!): Boolean!
 }

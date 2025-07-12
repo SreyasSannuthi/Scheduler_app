@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 
 @Data
-public class AppointmentInput {
+public class AppointmentInputDTO {
 
     @NotBlank(message = "User ID is required")
     private String userId;

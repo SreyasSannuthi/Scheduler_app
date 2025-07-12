@@ -1,11 +1,13 @@
 package com.scheduler.schedulerapp.resolver;
 
-import com.scheduler.schedulerapp.dto.AppointmentInput;
-import com.scheduler.schedulerapp.dto.AppointmentUpdateInput;
+import com.scheduler.schedulerapp.dto.AppointmentInputDTO;
+import com.scheduler.schedulerapp.dto.AppointmentUpdateInputDTO;
+import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
+import com.scheduler.schedulerapp.mapper.DTOMapper;
 import com.scheduler.schedulerapp.model.Appointment;
 import com.scheduler.schedulerapp.model.User;
-import com.scheduler.schedulerapp.repository.UserRepository;
 import com.scheduler.schedulerapp.service.appointment.AppointmentService;
+import com.scheduler.schedulerapp.service.user.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -17,6 +19,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Controller
 public class AppointmentResolver {
@@ -25,94 +28,119 @@ public class AppointmentResolver {
     private AppointmentService appointmentService;
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
+
+    @Autowired
+    private DTOMapper dtoMapper;
 
     @QueryMapping
-    public List<Appointment> appointments(@Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public List<AppointmentResponseDTO> appointments(@Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
 
+        List<Appointment> appointments;
         if (user.isPresent() && "admin".equals(user.get().getRole())) {
-            return appointmentService.getAllAppointments();
+            appointments = appointmentService.getAllAppointments();
         } else {
-            return appointmentService.getAppointmentsByUser(userId);
+            appointments = appointmentService.getAppointmentsByUser(userId);
         }
+
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @QueryMapping
-    public List<Appointment> appointmentsByUser(@Argument String userId) {
+    public List<AppointmentResponseDTO> appointmentsByUser(@Argument String userId) {
         return appointments(userId);
     }
 
     @QueryMapping
-    public Optional<Appointment> appointmentById(@Argument String id, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public AppointmentResponseDTO appointmentById(@Argument String id, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
         Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
 
         if (appointment.isPresent() && user.isPresent() && !"admin".equals(user.get().getRole()) &&
                 !userId.equals(appointment.get().getUserId())) {
-            return Optional.empty();
+            return null;
         }
 
-        return appointment;
+        return appointment.map(dtoMapper::toAppointmentResponseDTO).orElse(null);
     }
 
     @QueryMapping
-    public List<Appointment> appointmentsByDateRange(@Argument String startDate, @Argument String endDate, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public List<AppointmentResponseDTO> appointmentsByDateRange(@Argument String startDate, @Argument String endDate, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
         LocalDateTime start = parseDateTime(startDate);
         LocalDateTime end = parseDateTime(endDate);
 
+        List<Appointment> appointments;
         if (user.isPresent() && "admin".equals(user.get().getRole())) {
-            return appointmentService.getAppointmentsByDateRange(start, end);
+            appointments = appointmentService.getAppointmentsByDateRange(start, end);
         } else {
-            return appointmentService.getAppointmentsByUserAndDateRange(userId, start, end);
+            appointments = appointmentService.getAppointmentsByUserAndDateRange(userId, start, end);
         }
+
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @QueryMapping
-    public List<Appointment> appointmentsByUserAndDateRange(@Argument String userId, @Argument String startDate, @Argument String endDate) {
+    public List<AppointmentResponseDTO> appointmentsByUserAndDateRange(@Argument String userId, @Argument String startDate, @Argument String endDate) {
         return appointmentsByDateRange(startDate, endDate, userId);
     }
 
     @QueryMapping
-    public List<Appointment> appointmentsByCategory(@Argument String category, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public List<AppointmentResponseDTO> appointmentsByCategory(@Argument String category, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
 
+        List<Appointment> appointments;
         if (user.isPresent() && "admin".equals(user.get().getRole())) {
-            return appointmentService.getAppointmentsByCategory(category);
+            appointments = appointmentService.getAppointmentsByCategory(category);
         } else {
-            return appointmentService.getAppointmentsByUser(userId)
+            appointments = appointmentService.getAppointmentsByUser(userId)
                     .stream()
                     .filter(apt -> category.equals(apt.getCategory()))
                     .toList();
         }
+
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @QueryMapping
-    public List<Appointment> appointmentsByStatus(@Argument String status, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public List<AppointmentResponseDTO> appointmentsByStatus(@Argument String status, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
 
+        List<Appointment> appointments;
         if (user.isPresent() && "admin".equals(user.get().getRole())) {
-            return appointmentService.getAppointmentsByStatus(status);
+            appointments = appointmentService.getAppointmentsByStatus(status);
         } else {
-            return appointmentService.getAppointmentsByUser(userId)
+            appointments = appointmentService.getAppointmentsByUser(userId)
                     .stream()
                     .filter(apt -> status.equals(apt.getStatus()))
                     .toList();
         }
+
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @QueryMapping
-    public List<Appointment> checkCollision(@Argument String userId, @Argument String startTime, @Argument String endTime) {
+    public List<AppointmentResponseDTO> checkCollision(@Argument String userId, @Argument String startTime, @Argument String endTime) {
         LocalDateTime start = parseDateTime(startTime);
         LocalDateTime end = parseDateTime(endTime);
 
-        return appointmentService.checkCollision(userId, start, end);
+        return appointmentService.checkCollision(userId, start, end).stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
     @MutationMapping
-    public Appointment createAppointment(@Valid @Argument AppointmentInput input, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public AppointmentResponseDTO createAppointment(@Valid @Argument AppointmentInputDTO input, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
 
         if (user.isEmpty() || !"admin".equals(user.get().getRole())) {
             input.setUserId(userId);
@@ -134,16 +162,17 @@ public class AppointmentResolver {
         appointment.setStatus(input.getStatus() != null ? input.getStatus() : "scheduled");
         appointment.setCategory(input.getCategory() != null ? input.getCategory() : "work");
 
-        return appointmentService.createAppointment(appointment);
+        Appointment savedAppointment = appointmentService.createAppointment(appointment);
+        return dtoMapper.toAppointmentResponseDTO(savedAppointment);
     }
 
     @MutationMapping
-    public Appointment updateAppointment(@Argument String appointmentId, @Argument AppointmentUpdateInput input, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public AppointmentResponseDTO updateAppointment(@Argument String id, @Valid @Argument AppointmentUpdateInputDTO input, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
+        Optional<Appointment> existing = appointmentService.getAppointmentById(id);
 
-        Optional<Appointment> existing = appointmentService.getAppointmentById(appointmentId);
         if (existing.isEmpty()) {
-            throw new IllegalArgumentException("Appointment not found with ID: " + appointmentId);
+            throw new IllegalArgumentException("Appointment not found with ID: " + id);
         }
 
         Appointment appointment = existing.get();
@@ -155,11 +184,9 @@ public class AppointmentResolver {
         if (input.getTitle() != null) {
             appointment.setTitle(input.getTitle());
         }
-
         if (input.getDescription() != null) {
             appointment.setDescription(input.getDescription());
         }
-
         if (input.getStartTime() != null) {
             LocalDateTime newStartTime = parseDateTime(input.getStartTime());
             if (newStartTime.isBefore(LocalDateTime.now())) {
@@ -167,47 +194,45 @@ public class AppointmentResolver {
             }
             appointment.setStartTime(newStartTime);
         }
-
         if (input.getEndTime() != null) {
             appointment.setEndTime(parseDateTime(input.getEndTime()));
         }
-
         if (input.getStatus() != null) {
             appointment.setStatus(input.getStatus());
         }
-
         if (input.getCategory() != null) {
             appointment.setCategory(input.getCategory());
         }
 
-        return appointmentService.updateAppointment(appointmentId, appointment);
+        Appointment updatedAppointment = appointmentService.updateAppointment(id, appointment);
+        return dtoMapper.toAppointmentResponseDTO(updatedAppointment);
     }
 
     @MutationMapping
-    public Boolean deleteAppointment(@Argument String appointmentId, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public Boolean deleteAppointment(@Argument String id, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
+        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
 
-        Optional<Appointment> appointment = appointmentService.getAppointmentById(appointmentId);
         if (appointment.isEmpty()) {
-            throw new IllegalArgumentException("Appointment not found with ID: " + appointmentId);
+            throw new IllegalArgumentException("Appointment not found with ID: " + id);
         }
 
         if (user.isEmpty() || (!"admin".equals(user.get().getRole()) && !userId.equals(appointment.get().getUserId()))) {
             throw new SecurityException("Access denied: You can only delete your own appointments");
         }
 
-        appointmentService.deleteAppointment(appointmentId);
+        appointmentService.deleteAppointment(id);
         return true;
     }
 
     @MutationMapping
-    public Boolean deleteMultipleAppointments(@Argument List<String> appointmentIds, @Argument String userId) {
-        Optional<User> user = userRepository.findById(userId);
+    public Boolean deleteMultipleAppointments(@Argument List<String> ids, @Argument String userId) {
+        Optional<User> user = userService.getUserById(userId);
 
-        for (String appointmentId : appointmentIds) {
-            Optional<Appointment> appointment = appointmentService.getAppointmentById(appointmentId);
+        for (String id : ids) {
+            Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
             if (appointment.isEmpty()) {
-                throw new IllegalArgumentException("Appointment not found with ID: " + appointmentId);
+                throw new IllegalArgumentException("Appointment not found with ID: " + id);
             }
 
             if (user.isEmpty() || (!"admin".equals(user.get().getRole()) && !userId.equals(appointment.get().getUserId()))) {
@@ -215,7 +240,7 @@ public class AppointmentResolver {
             }
         }
 
-        appointmentService.deleteMultipleAppointments(appointmentIds);
+        appointmentService.deleteMultipleAppointments(ids);
         return true;
     }
 

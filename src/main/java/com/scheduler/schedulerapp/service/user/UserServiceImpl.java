@@ -2,7 +2,7 @@ package com.scheduler.schedulerapp.service.user;
 
 import com.scheduler.schedulerapp.model.User;
 import com.scheduler.schedulerapp.repository.UserRepository;
-import com.scheduler.schedulerapp.service.UserService;
+import com.scheduler.schedulerapp.service.user.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
