@@ -1,4 +1,4 @@
-package com.scheduler.schedulerapp.service;
+package com.scheduler.schedulerapp.service.appointment;
 
 import com.scheduler.schedulerapp.model.Appointment;
 import com.scheduler.schedulerapp.repository.AppointmentRepository;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class AppointmentService {
+public class AppointmentServiceImpl implements AppointmentService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;

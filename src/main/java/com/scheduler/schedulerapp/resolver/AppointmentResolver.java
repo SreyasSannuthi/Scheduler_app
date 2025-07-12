@@ -5,7 +5,7 @@ import com.scheduler.schedulerapp.dto.AppointmentUpdateInput;
 import com.scheduler.schedulerapp.model.Appointment;
 import com.scheduler.schedulerapp.model.User;
 import com.scheduler.schedulerapp.repository.UserRepository;
-import com.scheduler.schedulerapp.service.AppointmentService;
+import com.scheduler.schedulerapp.service.appointment.AppointmentService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -138,12 +138,12 @@ public class AppointmentResolver {
     }
 
     @MutationMapping
-    public Appointment updateAppointment(@Argument String id, @Argument AppointmentUpdateInput input, @Argument String userId) {
+    public Appointment updateAppointment(@Argument String appointmentId, @Argument AppointmentUpdateInput input, @Argument String userId) {
         Optional<User> user = userRepository.findById(userId);
 
-        Optional<Appointment> existing = appointmentService.getAppointmentById(id);
+        Optional<Appointment> existing = appointmentService.getAppointmentById(appointmentId);
         if (existing.isEmpty()) {
-            throw new IllegalArgumentException("Appointment not found with ID: " + id);
+            throw new IllegalArgumentException("Appointment not found with ID: " + appointmentId);
         }
 
         Appointment appointment = existing.get();
@@ -180,34 +180,34 @@ public class AppointmentResolver {
             appointment.setCategory(input.getCategory());
         }
 
-        return appointmentService.updateAppointment(id, appointment);
+        return appointmentService.updateAppointment(appointmentId, appointment);
     }
 
     @MutationMapping
-    public Boolean deleteAppointment(@Argument String id, @Argument String userId) {
+    public Boolean deleteAppointment(@Argument String appointmentId, @Argument String userId) {
         Optional<User> user = userRepository.findById(userId);
 
-        Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+        Optional<Appointment> appointment = appointmentService.getAppointmentById(appointmentId);
         if (appointment.isEmpty()) {
-            throw new IllegalArgumentException("Appointment not found with ID: " + id);
+            throw new IllegalArgumentException("Appointment not found with ID: " + appointmentId);
         }
 
         if (user.isEmpty() || (!"admin".equals(user.get().getRole()) && !userId.equals(appointment.get().getUserId()))) {
             throw new SecurityException("Access denied: You can only delete your own appointments");
         }
 
-        appointmentService.deleteAppointment(id);
+        appointmentService.deleteAppointment(appointmentId);
         return true;
     }
 
     @MutationMapping
-    public Boolean deleteMultipleAppointments(@Argument List<String> ids, @Argument String userId) {
+    public Boolean deleteMultipleAppointments(@Argument List<String> appointmentIds, @Argument String userId) {
         Optional<User> user = userRepository.findById(userId);
 
-        for (String id : ids) {
-            Optional<Appointment> appointment = appointmentService.getAppointmentById(id);
+        for (String appointmentId : appointmentIds) {
+            Optional<Appointment> appointment = appointmentService.getAppointmentById(appointmentId);
             if (appointment.isEmpty()) {
-                throw new IllegalArgumentException("Appointment not found with ID: " + id);
+                throw new IllegalArgumentException("Appointment not found with ID: " + appointmentId);
             }
 
             if (user.isEmpty() || (!"admin".equals(user.get().getRole()) && !userId.equals(appointment.get().getUserId()))) {
@@ -215,7 +215,7 @@ public class AppointmentResolver {
             }
         }
 
-        appointmentService.deleteMultipleAppointments(ids);
+        appointmentService.deleteMultipleAppointments(appointmentIds);
         return true;
     }
 

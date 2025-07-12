@@ -1,7 +1,7 @@
 package com.scheduler.schedulerapp.resolver;
 
 import com.scheduler.schedulerapp.model.User;
-import com.scheduler.schedulerapp.repository.UserRepository;
+import com.scheduler.schedulerapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -14,20 +14,20 @@ import java.util.Optional;
 public class UserResolver {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @QueryMapping
     public List<User> users() {
-        return userRepository.findAll();
+        return userService.getAllUsers();
     }
 
     @QueryMapping
     public Optional<User> user(@Argument String id) {
-        return userRepository.findById(id);
+        return userService.getUserById(id);
     }
 
     @QueryMapping
     public List<User> usersByRole(@Argument String role) {
-        return userRepository.findByRole(role);
+        return userService.getUsersByRole(role);
     }
 }

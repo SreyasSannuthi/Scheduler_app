@@ -52,7 +52,7 @@ type Query {
 
 type Mutation {
     createAppointment(input: AppointmentInput!, userId: ID!): Appointment!
-    updateAppointment(id: ID!, input: AppointmentUpdateInput!, userId: ID!): Appointment!
-    deleteAppointment(id: ID!, userId: ID!): Boolean!
-    deleteMultipleAppointments(ids: [ID!]!, userId: ID!): Boolean!
+    updateAppointment(appointmentId: ID!, input: AppointmentUpdateInput!, userId: ID!): Appointment!
+    deleteAppointment(appointmentId: ID!, userId: ID!): Boolean!
+    deleteMultipleAppointments(appointmentIds: [ID!]!, userId: ID!): Boolean!
 }
