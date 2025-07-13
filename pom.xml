@@ -9,7 +9,7 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.scheduler</groupId>
-	<artifactId>schedulerapp</artifactId>
+	<artifactId>schedulerapp-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>schedulerapp</name>
 	<description>Spring Boot application for scheduling appointments</description>
