@@ -1,0 +1,315 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppointmentResolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">schedulerapp</a> &gt; <a href="index.source.html" class="el_package">com.scheduler.schedulerapp.resolver</a> &gt; <span class="el_source">AppointmentResolver.java</span></div><h1>AppointmentResolver.java</h1><pre class="source lang-java linenums">package com.scheduler.schedulerapp.resolver;
+
+import com.scheduler.schedulerapp.dto.AppointmentInputDTO;
+import com.scheduler.schedulerapp.dto.AppointmentUpdateInputDTO;
+import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
+import com.scheduler.schedulerapp.mapper.DTOMapper;
+import com.scheduler.schedulerapp.model.Appointment;
+import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.Patient;
+import com.scheduler.schedulerapp.service.appointment.AppointmentService;
+import com.scheduler.schedulerapp.service.doctor.DoctorService;
+import com.scheduler.schedulerapp.service.patient.PatientService;
+import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.QueryMapping;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
+import org.springframework.graphql.data.method.annotation.Argument;
+import org.springframework.stereotype.Controller;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Controller
+<span class="fc" id="L28">public class AppointmentResolver {</span>
+
+    @Autowired
+    private AppointmentService appointmentService;
+
+    @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private PatientService patientService;
+
+    @Autowired
+    private DTOMapper dtoMapper;
+
+<span class="fc" id="L42">    private static final Set&lt;String&gt; ADMIN_IDS = Set.of(</span>
+<span class="fc" id="L43">            &quot;687de135cbfac1486c629ade&quot;,</span>
+<span class="fc" id="L44">            &quot;68760865c47985c69cf4c4c1&quot;);</span>
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointments(@Argument String adminId) {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">        if (!ADMIN_IDS.contains(adminId)) {</span>
+<span class="fc" id="L49">            throw new SecurityException(&quot;Access denied: Only admin can view all appointments&quot;);</span>
+        }
+
+<span class="fc" id="L52">        List&lt;Appointment&gt; appointments = appointmentService.getAllAppointments();</span>
+
+<span class="fc" id="L54">        return appointments.stream()</span>
+<span class="fc" id="L55">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L56">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointmentsByDoctor(@Argument String doctorId) {
+<span class="fc" id="L61">        Optional&lt;Doctor&gt; doctor = doctorService.getDoctorById(doctorId);</span>
+
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (doctor.isEmpty()) {</span>
+<span class="fc" id="L64">            throw new IllegalArgumentException(&quot;Doctor not found with ID: &quot; + doctorId);</span>
+        }
+
+<span class="fc" id="L67">        List&lt;Appointment&gt; appointments = appointmentService.getAppointmentsByDoctor(doctorId);</span>
+
+<span class="fc" id="L69">        return appointments.stream()</span>
+<span class="fc" id="L70">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L71">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointmentsByPatient(@Argument String patientId) {
+<span class="fc" id="L76">        Optional&lt;Patient&gt; patient = patientService.getPatientById(patientId);</span>
+
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (patient.isEmpty()) {</span>
+<span class="fc" id="L79">            throw new IllegalArgumentException(&quot;Patient not found with ID: &quot; + patientId);</span>
+        }
+
+<span class="fc" id="L82">        List&lt;Appointment&gt; appointments = appointmentService.getAppointmentsByPatient(patientId);</span>
+
+<span class="fc" id="L84">        return appointments.stream()</span>
+<span class="fc" id="L85">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L86">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public AppointmentResponseDTO appointmentById(@Argument String id, @Argument String requesterId) {
+<span class="fc" id="L91">        Optional&lt;Appointment&gt; appointment = appointmentService.getAppointmentById(id);</span>
+
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (appointment.isEmpty()) {</span>
+<span class="fc" id="L94">            return null;</span>
+        }
+
+<span class="fc bfc" id="L97" title="All 4 branches covered.">        if (!ADMIN_IDS.contains(requesterId) &amp;&amp; !requesterId.equals(appointment.get().getDoctorId()) &amp;&amp;</span>
+<span class="fc bfc" id="L98" title="All 2 branches covered.">                !requesterId.equals(appointment.get().getPatientId())) {</span>
+<span class="fc" id="L99">            return null;</span>
+        }
+
+<span class="fc" id="L102">        return dtoMapper.toAppointmentResponseDTO(appointment.get());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointmentsByDateRange(@Argument String adminId, @Argument String startDate,
+            @Argument String endDate) {
+<span class="fc" id="L108">        LocalDateTime start = parseDateTime(startDate);</span>
+<span class="fc" id="L109">        LocalDateTime end = parseDateTime(endDate);</span>
+
+<span class="fc bfc" id="L111" title="All 2 branches covered.">        if (!ADMIN_IDS.contains(adminId)) {</span>
+<span class="fc" id="L112">            throw new SecurityException(&quot;Access denied: Only admin can view all appointments&quot;);</span>
+        }
+
+<span class="fc" id="L115">        List&lt;Appointment&gt; appointments = appointmentService.getAppointmentsByDateRange(start, end);</span>
+
+<span class="fc" id="L117">        return appointments.stream()</span>
+<span class="fc" id="L118">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L119">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointmentsByDoctorAndDateRange(@Argument String doctorId,
+            @Argument String startDate, @Argument String endDate) {
+<span class="fc" id="L125">        Optional&lt;Doctor&gt; doctor = doctorService.getDoctorById(doctorId);</span>
+<span class="fc" id="L126">        LocalDateTime start = parseDateTime(startDate);</span>
+<span class="fc" id="L127">        LocalDateTime end = parseDateTime(endDate);</span>
+
+<span class="fc bfc" id="L129" title="All 2 branches covered.">        if (doctor.isEmpty()) {</span>
+<span class="fc" id="L130">            throw new IllegalArgumentException(&quot;Doctor not found with ID: &quot; + doctorId);</span>
+        }
+
+<span class="fc" id="L133">        List&lt;Appointment&gt; appointments = appointmentService.getAppointmentsByDoctorAndDateRange(doctorId, start, end);</span>
+
+<span class="fc" id="L135">        return appointments.stream()</span>
+<span class="fc" id="L136">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L137">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointmentsByPatientAndDateRange(@Argument String patientId,
+            @Argument String startDate, @Argument String endDate) {
+<span class="fc" id="L143">        Optional&lt;Patient&gt; patient = patientService.getPatientById(patientId);</span>
+<span class="fc" id="L144">        LocalDateTime start = parseDateTime(startDate);</span>
+<span class="fc" id="L145">        LocalDateTime end = parseDateTime(endDate);</span>
+
+<span class="fc bfc" id="L147" title="All 2 branches covered.">        if (patient.isEmpty()) {</span>
+<span class="fc" id="L148">            throw new IllegalArgumentException(&quot;Patient not found with ID: &quot; + patientId);</span>
+        }
+
+<span class="fc" id="L151">        List&lt;Appointment&gt; appointments = appointmentService.getAppointmentsByPatientAndDateRange(patientId, start, end);</span>
+
+<span class="fc" id="L153">        return appointments.stream()</span>
+<span class="fc" id="L154">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L155">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; appointmentsByStatus(@Argument String status, @Argument String requesterId) {
+        List&lt;Appointment&gt; appointments;
+
+<span class="fc bfc" id="L162" title="All 2 branches covered.">        if (ADMIN_IDS.contains(requesterId)) {</span>
+<span class="fc" id="L163">            appointments = appointmentService.getAppointmentsByStatus(status);</span>
+<span class="fc" id="L164">        } else {</span>
+<span class="fc" id="L165">            appointments = appointmentService.getAppointmentsByDoctor(requesterId)</span>
+<span class="fc" id="L166">                    .stream()</span>
+<span class="fc" id="L167">                    .filter(apt -&gt; status.equals(apt.getStatus()))</span>
+<span class="fc" id="L168">                    .toList();</span>
+        }
+
+<span class="fc" id="L171">        return appointments.stream()</span>
+<span class="fc" id="L172">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L173">                .collect(Collectors.toList());</span>
+    }
+
+    @QueryMapping
+    public List&lt;AppointmentResponseDTO&gt; checkCollision(@Argument String doctorId, @Argument String patientId,
+            @Argument String startTime, @Argument String endTime) {
+
+<span class="fc" id="L180">        Optional&lt;Doctor&gt; doctor = doctorService.getDoctorById(doctorId);</span>
+<span class="fc" id="L181">        Optional&lt;Patient&gt; patient = patientService.getPatientById(patientId);</span>
+
+<span class="fc bfc" id="L183" title="All 2 branches covered.">        if (doctor.isEmpty()) {</span>
+<span class="fc" id="L184">            throw new IllegalArgumentException(&quot;Doctor not found with ID: &quot; + doctorId);</span>
+        }
+<span class="fc bfc" id="L186" title="All 2 branches covered.">        if (patient.isEmpty()) {</span>
+<span class="fc" id="L187">            throw new IllegalArgumentException(&quot;Patient not found with ID: &quot; + patientId);</span>
+        }
+
+<span class="fc" id="L190">        LocalDateTime start = parseDateTime(startTime);</span>
+<span class="fc" id="L191">        LocalDateTime end = parseDateTime(endTime);</span>
+
+<span class="fc" id="L193">        return appointmentService.checkCollision(doctorId, patientId, start, end).stream()</span>
+<span class="fc" id="L194">                .map(dtoMapper::toAppointmentResponseDTO)</span>
+<span class="fc" id="L195">                .collect(Collectors.toList());</span>
+    }
+
+    @MutationMapping
+    public AppointmentResponseDTO createAppointment(@Valid @Argument AppointmentInputDTO input) {
+<span class="fc" id="L200">        Optional&lt;Doctor&gt; doctor = doctorService.getDoctorById(input.getDoctorId());</span>
+<span class="fc bfc" id="L201" title="All 2 branches covered.">        if (doctor.isEmpty()) {</span>
+<span class="fc" id="L202">            throw new IllegalArgumentException(&quot;Doctor not found with ID: &quot; + input.getDoctorId());</span>
+        }
+
+<span class="fc" id="L205">        Optional&lt;Patient&gt; patient = patientService.getPatientById(input.getPatientId());</span>
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        if (patient.isEmpty()) {</span>
+<span class="fc" id="L207">            throw new IllegalArgumentException(&quot;Patient not found with ID: &quot; + input.getPatientId());</span>
+        }
+
+<span class="fc" id="L210">        LocalDateTime startTime = parseDateTime(input.getStartTime());</span>
+<span class="fc" id="L211">        LocalDateTime endTime = parseDateTime(input.getEndTime());</span>
+
+<span class="fc bfc" id="L213" title="All 2 branches covered.">        if (startTime.isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L214">            throw new IllegalArgumentException(&quot;Cannot create appointments in the past&quot;);</span>
+        }
+
+<span class="fc" id="L217">        Appointment appointment = new Appointment();</span>
+<span class="fc" id="L218">        appointment.setTitle(input.getTitle());</span>
+<span class="fc" id="L219">        appointment.setDescription(input.getDescription());</span>
+<span class="fc" id="L220">        appointment.setDoctorId(input.getDoctorId());</span>
+<span class="fc" id="L221">        appointment.setPatientId(input.getPatientId());</span>
+<span class="fc" id="L222">        appointment.setStartTime(startTime);</span>
+<span class="fc" id="L223">        appointment.setEndTime(endTime);</span>
+<span class="fc bfc" id="L224" title="All 2 branches covered.">        appointment.setStatus(input.getStatus() != null ? input.getStatus() : &quot;scheduled&quot;);</span>
+
+<span class="fc" id="L226">        Appointment savedAppointment = appointmentService.createAppointment(appointment);</span>
+<span class="fc" id="L227">        return dtoMapper.toAppointmentResponseDTO(savedAppointment);</span>
+    }
+
+    @MutationMapping
+    public AppointmentResponseDTO updateAppointment(@Argument String id,
+            @Valid @Argument AppointmentUpdateInputDTO input, @Argument String requesterId) {
+
+<span class="fc" id="L234">        Optional&lt;Appointment&gt; existing = appointmentService.getAppointmentById(id);</span>
+
+<span class="fc bfc" id="L236" title="All 2 branches covered.">        if (existing.isEmpty()) {</span>
+<span class="fc" id="L237">            throw new IllegalArgumentException(&quot;Appointment not found with ID: &quot; + id);</span>
+        }
+
+<span class="fc" id="L240">        Appointment appointment = existing.get();</span>
+
+<span class="fc bfc" id="L242" title="All 4 branches covered.">        if (!ADMIN_IDS.contains(requesterId) &amp;&amp; !requesterId.equals(appointment.getDoctorId())</span>
+<span class="fc bfc" id="L243" title="All 2 branches covered.">                &amp;&amp; !requesterId.equals(appointment.getPatientId())) {</span>
+<span class="fc" id="L244">            throw new SecurityException(&quot;Access denied: You can only update your own appointments&quot;);</span>
+        }
+
+<span class="fc bfc" id="L247" title="All 2 branches covered.">        if (input.getTitle() != null) {</span>
+<span class="fc" id="L248">            appointment.setTitle(input.getTitle());</span>
+        }
+<span class="fc bfc" id="L250" title="All 2 branches covered.">        if (input.getDescription() != null) {</span>
+<span class="fc" id="L251">            appointment.setDescription(input.getDescription());</span>
+        }
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        if (input.getStartTime() != null) {</span>
+<span class="fc" id="L254">            LocalDateTime newStartTime = parseDateTime(input.getStartTime());</span>
+<span class="fc bfc" id="L255" title="All 2 branches covered.">            if (newStartTime.isBefore(LocalDateTime.now())) {</span>
+<span class="fc" id="L256">                throw new IllegalArgumentException(&quot;Cannot update appointment to past time&quot;);</span>
+            }
+<span class="fc" id="L258">            appointment.setStartTime(newStartTime);</span>
+        }
+<span class="fc bfc" id="L260" title="All 2 branches covered.">        if (input.getEndTime() != null) {</span>
+<span class="fc" id="L261">            appointment.setEndTime(parseDateTime(input.getEndTime()));</span>
+        }
+<span class="fc bfc" id="L263" title="All 2 branches covered.">        if (input.getStatus() != null) {</span>
+<span class="fc" id="L264">            appointment.setStatus(input.getStatus());</span>
+        }
+
+<span class="fc" id="L267">        Appointment updatedAppointment = appointmentService.updateAppointment(id, appointment);</span>
+<span class="fc" id="L268">        return dtoMapper.toAppointmentResponseDTO(updatedAppointment);</span>
+    }
+
+    @MutationMapping
+    public Boolean deleteAppointment(@Argument String id, @Argument String requesterId) {
+
+<span class="fc" id="L274">        Optional&lt;Appointment&gt; appointment = appointmentService.getAppointmentById(id);</span>
+
+<span class="fc bfc" id="L276" title="All 2 branches covered.">        if (appointment.isEmpty()) {</span>
+<span class="fc" id="L277">            throw new IllegalArgumentException(&quot;Appointment not found with ID: &quot; + id);</span>
+        }
+
+<span class="fc bfc" id="L280" title="All 4 branches covered.">        if (!ADMIN_IDS.contains(requesterId) &amp;&amp; !requesterId.equals(appointment.get().getDoctorId())</span>
+<span class="fc bfc" id="L281" title="All 2 branches covered.">                &amp;&amp; !requesterId.equals(appointment.get().getPatientId())) {</span>
+<span class="fc" id="L282">            throw new SecurityException(&quot;Access denied: You can only delete your own appointments&quot;);</span>
+        }
+
+<span class="fc" id="L285">        appointmentService.deleteAppointment(id);</span>
+<span class="fc" id="L286">        return true;</span>
+    }
+
+    @MutationMapping
+    public Boolean deleteMultipleAppointments(@Argument List&lt;String&gt; ids, @Argument String requesterId) {
+<span class="fc bfc" id="L291" title="All 2 branches covered.">        for (String id : ids) {</span>
+<span class="fc" id="L292">            Optional&lt;Appointment&gt; appointment = appointmentService.getAppointmentById(id);</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">            if (appointment.isEmpty()) {</span>
+<span class="fc" id="L294">                throw new IllegalArgumentException(&quot;Appointment not found with ID: &quot; + id);</span>
+            }
+
+<span class="fc bfc" id="L297" title="All 4 branches covered.">            if (!ADMIN_IDS.contains(requesterId) &amp;&amp; !requesterId.equals(appointment.get().getDoctorId())</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">                    &amp;&amp; !requesterId.equals(appointment.get().getPatientId())) {</span>
+<span class="fc" id="L299">                throw new SecurityException(&quot;Access denied: You can only delete your own appointments&quot;);</span>
+            }
+        }
+
+<span class="fc" id="L303">        appointmentService.deleteMultipleAppointments(ids);</span>
+<span class="fc" id="L304">        return true;</span>
+    }
+
+    private LocalDateTime parseDateTime(String dateTimeStr) {
+        try {
+<span class="fc" id="L309">            return LocalDateTime.parse(dateTimeStr);</span>
+<span class="fc" id="L310">        } catch (DateTimeParseException e) {</span>
+<span class="fc" id="L311">            throw new IllegalArgumentException(&quot;Invalid date format. Use ISO format: 2024-12-15T10:00:00&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

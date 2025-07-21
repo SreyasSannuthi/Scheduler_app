@@ -6,10 +6,12 @@ com/scheduler/schedulerapp/dto/AppointmentUpdateInputDTO.class
 com/scheduler/schedulerapp/model/Doctor.class
 com/scheduler/schedulerapp/service/doctor/DoctorServiceImpl.class
 com/scheduler/schedulerapp/service/doctor/DoctorService.class
+com/scheduler/schedulerapp/dto/PatientSignupInputDTO.class
 com/scheduler/schedulerapp/dto/PatientResponseDTO.class
 com/scheduler/schedulerapp/dto/AuthResponseDTO.class
 com/scheduler/schedulerapp/repository/PatientRepository.class
 com/scheduler/schedulerapp/service/patient/PatientServiceImpl.class
+com/scheduler/schedulerapp/dto/SignupResponseDTO.class
 com/scheduler/schedulerapp/dto/AppointmentResponseDTO.class
 com/scheduler/schedulerapp/config/CorsConfig.class
 com/scheduler/schedulerapp/resolver/DoctorResolver.class
@@ -24,9 +26,11 @@ com/scheduler/schedulerapp/repository/AppointmentRepository.class
 com/scheduler/schedulerapp/security/JwtAuthenticationFilter.class
 com/scheduler/schedulerapp/service/auth/AuthServiceImpl.class
 com/scheduler/schedulerapp/resolver/PatientResolver.class
+com/scheduler/schedulerapp/dto/DoctorSignupInputDTO.class
 com/scheduler/schedulerapp/dto/AuthRequestDTO.class
 com/scheduler/schedulerapp/service/auth/AuthService.class
 com/scheduler/schedulerapp/security/CustomUserDetailsService.class
+com/scheduler/schedulerapp/resolver/SignupResolver.class
 com/scheduler/schedulerapp/dto/DoctorResponseDTO.class
 com/scheduler/schedulerapp/resolver/AuthResolver.class
 com/scheduler/schedulerapp/mapper/DTOMapper.class

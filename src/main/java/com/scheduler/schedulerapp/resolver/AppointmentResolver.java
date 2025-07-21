@@ -40,7 +40,8 @@ public class AppointmentResolver {
     private DTOMapper dtoMapper;
 
     private static final Set<String> ADMIN_IDS = Set.of(
-            "687de135cbfac1486c629ade");
+            "687de135cbfac1486c629ade",
+            "68760865c47985c69cf4c4c1");
 
     @QueryMapping
     public List<AppointmentResponseDTO> appointments(@Argument String adminId) {
@@ -103,7 +104,7 @@ public class AppointmentResolver {
 
     @QueryMapping
     public List<AppointmentResponseDTO> appointmentsByDateRange(@Argument String adminId, @Argument String startDate,
-                                                                @Argument String endDate) {
+            @Argument String endDate) {
         LocalDateTime start = parseDateTime(startDate);
         LocalDateTime end = parseDateTime(endDate);
 
@@ -120,7 +121,7 @@ public class AppointmentResolver {
 
     @QueryMapping
     public List<AppointmentResponseDTO> appointmentsByDoctorAndDateRange(@Argument String doctorId,
-                                                                         @Argument String startDate, @Argument String endDate) {
+            @Argument String startDate, @Argument String endDate) {
         Optional<Doctor> doctor = doctorService.getDoctorById(doctorId);
         LocalDateTime start = parseDateTime(startDate);
         LocalDateTime end = parseDateTime(endDate);
@@ -138,7 +139,7 @@ public class AppointmentResolver {
 
     @QueryMapping
     public List<AppointmentResponseDTO> appointmentsByPatientAndDateRange(@Argument String patientId,
-                                                                          @Argument String startDate, @Argument String endDate) {
+            @Argument String startDate, @Argument String endDate) {
         Optional<Patient> patient = patientService.getPatientById(patientId);
         LocalDateTime start = parseDateTime(startDate);
         LocalDateTime end = parseDateTime(endDate);
@@ -174,7 +175,7 @@ public class AppointmentResolver {
 
     @QueryMapping
     public List<AppointmentResponseDTO> checkCollision(@Argument String doctorId, @Argument String patientId,
-                                                       @Argument String startTime, @Argument String endTime) {
+            @Argument String startTime, @Argument String endTime) {
 
         Optional<Doctor> doctor = doctorService.getDoctorById(doctorId);
         Optional<Patient> patient = patientService.getPatientById(patientId);
@@ -228,7 +229,7 @@ public class AppointmentResolver {
 
     @MutationMapping
     public AppointmentResponseDTO updateAppointment(@Argument String id,
-                                                    @Valid @Argument AppointmentUpdateInputDTO input, @Argument String requesterId) {
+            @Valid @Argument AppointmentUpdateInputDTO input, @Argument String requesterId) {
 
         Optional<Appointment> existing = appointmentService.getAppointmentById(id);
 
@@ -239,7 +240,7 @@ public class AppointmentResolver {
         Appointment appointment = existing.get();
 
         if (!ADMIN_IDS.contains(requesterId) && !requesterId.equals(appointment.getDoctorId())
-            && !requesterId.equals(appointment.getPatientId())) {
+                && !requesterId.equals(appointment.getPatientId())) {
             throw new SecurityException("Access denied: You can only update your own appointments");
         }
 
@@ -277,7 +278,7 @@ public class AppointmentResolver {
         }
 
         if (!ADMIN_IDS.contains(requesterId) && !requesterId.equals(appointment.get().getDoctorId())
-            && !requesterId.equals(appointment.get().getPatientId())) {
+                && !requesterId.equals(appointment.get().getPatientId())) {
             throw new SecurityException("Access denied: You can only delete your own appointments");
         }
 
@@ -294,7 +295,7 @@ public class AppointmentResolver {
             }
 
             if (!ADMIN_IDS.contains(requesterId) && !requesterId.equals(appointment.get().getDoctorId())
-                && !requesterId.equals(appointment.get().getPatientId())) {
+                    && !requesterId.equals(appointment.get().getPatientId())) {
                 throw new SecurityException("Access denied: You can only delete your own appointments");
             }
         }

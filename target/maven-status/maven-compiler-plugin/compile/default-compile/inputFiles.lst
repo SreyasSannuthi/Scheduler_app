@@ -7,7 +7,10 @@
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/AuthRequestDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/AuthResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/DoctorResponseDTO.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/DoctorSignupInputDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/PatientResponseDTO.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/PatientSignupInputDTO.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/SignupResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/mapper/DTOMapper.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/Appointment.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/Doctor.java
@@ -19,6 +22,7 @@
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/resolver/AuthResolver.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/resolver/DoctorResolver.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/resolver/PatientResolver.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/resolver/SignupResolver.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/security/CustomUserDetailsService.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/security/JwtAuthenticationFilter.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/security/JwtUtil.java

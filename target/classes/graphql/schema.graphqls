@@ -14,6 +14,22 @@ type Patient {
     role: String!
 }
 
+input DoctorSignupInput {
+    name: String!
+    email: String!
+    password: String!
+    confirmPassword: String!
+}
+
+input PatientSignupInput {
+    name: String!
+    email: String!
+    password: String!
+    confirmPassword: String!
+    phoneNumber: String!
+    age: Int!
+}
+
 type Appointment {
     id: ID!
     title: String!
@@ -28,6 +44,14 @@ type Appointment {
     updatedAt: String!
     status: String!
     duration: String!
+}
+
+type SignupResponse {
+    message: String!
+    success: Boolean!
+    userId: String
+    email: String
+    role: String
 }
 
 type AuthResponse {
@@ -90,4 +114,7 @@ type Mutation {
     updateAppointment(id: ID!, input: AppointmentUpdateInput!, requesterId: ID!): Appointment!
     deleteAppointment(id: ID!, requesterId: ID!): Boolean!
     deleteMultipleAppointments(ids: [ID!]!, requesterId: ID!): Boolean!
+
+    signupDoctor(input: DoctorSignupInput!): SignupResponse!
+    signupPatient(input: PatientSignupInput!): SignupResponse!
 }
