@@ -1,0 +1,27 @@
+spring:
+  profiles:
+    active: test
+
+  application:
+    name: ${SPRING_APPLICATION_NAME:schedulerapp-test}
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI:mongodb://localhost:27017/schedulerapp-test}
+
+  graphql:
+    graphiql:
+      enabled: ${SPRING_GRAPHQL_GRAPHIQL_ENABLED:false}
+      path: ${SPRING_GRAPHQL_GRAPHIQL_PATH:/graphiql}
+
+server:
+  port: ${SERVER_PORT:0}
+
+jwt:
+  secret: ${JWT_SECRET:test-secret-key-for-testing-purposes-only}
+  expiration: ${JWT_EXPIRATION:86400000}
+
+logging:
+  level:
+    org.springframework.data.mongodb: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_DATA_MONGODB:WARN}
+    com.scheduler.schedulerapp: WARN

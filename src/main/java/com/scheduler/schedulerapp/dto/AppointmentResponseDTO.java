@@ -11,12 +11,14 @@ public class AppointmentResponseDTO {
     private String id;
     private String title;
     private String description;
-    private String userId;
-    private String userName;
+    private String doctorId;
+    private String patientId;
+    private String doctorName;
+    private String patientName;
     private String startTime;
     private String endTime;
+    private String createdAt;
+    private String updatedAt;
     private String status;
-    private String category;
-    private String categoryColor;
     private String duration;
 }

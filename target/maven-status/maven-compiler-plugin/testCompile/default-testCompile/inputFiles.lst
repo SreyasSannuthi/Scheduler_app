@@ -1,1 +1,9 @@
-/Users/sreyas/Desktop/schedulerapp/src/test/java/com/scheduler/schedulerapp/SchedulerappApplicationTests.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/SchedulerappApplicationTests.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/resolver/AppointmentResolverTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/resolver/AuthResolverTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/resolver/DoctorResolverTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/resolver/PatientResolverTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/service/AppointmentServiceImplTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/service/AuthServiceImplTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/service/DoctorServiceImplTest.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/test/java/com/scheduler/schedulerapp/service/PatientServiceImplTest.java

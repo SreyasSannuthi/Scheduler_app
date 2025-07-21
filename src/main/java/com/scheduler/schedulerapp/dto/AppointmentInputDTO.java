@@ -12,8 +12,11 @@ import java.time.format.DateTimeParseException;
 @Data
 public class AppointmentInputDTO {
 
-    @NotBlank(message = "User ID is required")
-    private String userId;
+    @NotBlank(message = "Doctor ID is required")
+    private String doctorId;
+
+    @NotBlank(message = "Doctor ID is required")
+    private String patientId;
 
     @NotBlank(message = "Title is required")
     private String title;
@@ -28,9 +31,6 @@ public class AppointmentInputDTO {
 
     @Pattern(regexp = "scheduled|cancelled|completed", message = "Invalid status")
     private String status;
-
-    @Pattern(regexp = "work|personal|medical|education|social", message = "Invalid category")
-    private String category;
 
     @AssertTrue(message = "End time must be after start time")
     public boolean isValidTimeRange() {

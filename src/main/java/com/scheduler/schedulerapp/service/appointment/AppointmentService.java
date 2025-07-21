@@ -14,11 +14,12 @@ public interface AppointmentService {
     void deleteMultipleAppointments(List<String> ids);
 
     List<Appointment> getAllAppointments();
-    List<Appointment> getAppointmentsByUser(String userId);
+    List<Appointment> getAppointmentsByDoctor(String doctorId);
+    List<Appointment> getAppointmentsByPatient(String patientId);
     List<Appointment> getAppointmentsByDateRange(LocalDateTime start, LocalDateTime end);
-    List<Appointment> getAppointmentsByUserAndDateRange(String userId, LocalDateTime start, LocalDateTime end);
-    List<Appointment> getAppointmentsByCategory(String category);
+    List<Appointment> getAppointmentsByDoctorAndDateRange(String doctorId, LocalDateTime start, LocalDateTime end);
+    List<Appointment> getAppointmentsByPatientAndDateRange(String patientId, LocalDateTime start, LocalDateTime end);
     List<Appointment> getAppointmentsByStatus(String status);
 
-    List<Appointment> checkCollision(String userId, LocalDateTime startTime, LocalDateTime endTime);
+    List<Appointment> checkCollision(String doctorId,String patientId,LocalDateTime startTime, LocalDateTime endTime);
 }

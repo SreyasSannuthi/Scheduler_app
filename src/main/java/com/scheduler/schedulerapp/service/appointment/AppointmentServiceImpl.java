@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,13 +16,26 @@ public class AppointmentServiceImpl implements AppointmentService {
     @Autowired
     private AppointmentRepository appointmentRepository;
 
-    public List<Appointment> checkCollision(String userId, LocalDateTime startTime, LocalDateTime endTime) {
-        return appointmentRepository.findCollision(userId, startTime, endTime);
+    public List<Appointment> checkCollision(String doctorId, String patientId, LocalDateTime startTime, LocalDateTime endTime) {
+        List<Appointment> conflicts = new ArrayList<>();
+
+        List<Appointment> doctorConflicts = appointmentRepository.findDoctorCollision(doctorId, startTime, endTime);
+        conflicts.addAll(doctorConflicts);
+
+        List<Appointment> patientConflicts = appointmentRepository.findPatientCollision(patientId, startTime, endTime);
+        conflicts.addAll(patientConflicts);
+
+        return conflicts;
     }
 
-    public Appointment createAppointment(Appointment appointment){
+    public Appointment createAppointment(Appointment appointment) {
+
+        appointment.setCreatedAt(LocalDateTime.now());
+        appointment.setUpdatedAt(LocalDateTime.now());
+
         List<Appointment> conflicts = checkCollision(
-                appointment.getUserId(),
+                appointment.getDoctorId(),
+                appointment.getPatientId(),
                 appointment.getStartTime(),
                 appointment.getEndTime()
         );
@@ -35,8 +49,11 @@ public class AppointmentServiceImpl implements AppointmentService {
 
     public Appointment updateAppointment(String id, Appointment appointment) {
 
+        appointment.setUpdatedAt(LocalDateTime.now());
+
         List<Appointment> conflicts = checkCollision(
-                appointment.getUserId(),
+                appointment.getDoctorId(),
+                appointment.getPatientId(),
                 appointment.getStartTime(),
                 appointment.getEndTime()
         );
@@ -55,16 +72,24 @@ public class AppointmentServiceImpl implements AppointmentService {
         return appointmentRepository.findByStartTimeBetween(start, end);
     }
 
-    public List<Appointment> getAppointmentsByUserAndDateRange(String userId, LocalDateTime start, LocalDateTime end) {
-        return appointmentRepository.findByUserIdAndStartTimeBetween(userId, start, end);
+    public List<Appointment> getAppointmentsByDoctorAndDateRange(String doctorId, LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByDoctorIdAndStartTimeBetween(doctorId, start, end);
+    }
+
+    public List<Appointment> getAppointmentsByPatientAndDateRange(String patientId, LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByPatientIdAndStartTimeBetween(patientId, start, end);
     }
 
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }
 
-    public List<Appointment> getAppointmentsByUser(String userId) {
-        return appointmentRepository.findByUserId(userId);
+    public List<Appointment> getAppointmentsByDoctor(String doctorId) {
+        return appointmentRepository.findByDoctorId(doctorId);
+    }
+
+    public List<Appointment> getAppointmentsByPatient(String patientId) {
+        return appointmentRepository.findByPatientId(patientId);
     }
 
     public Optional<Appointment> getAppointmentById(String id) {
@@ -79,9 +104,6 @@ public class AppointmentServiceImpl implements AppointmentService {
         appointmentRepository.deleteAllById(ids);
     }
 
-    public List<Appointment> getAppointmentsByCategory(String category) {
-        return appointmentRepository.findByCategory(category);
-    }
 
     public List<Appointment> getAppointmentsByStatus(String status) {
         return appointmentRepository.findByStatus(status);

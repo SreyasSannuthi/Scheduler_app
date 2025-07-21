@@ -11,20 +11,29 @@ import java.util.List;
 @Repository
 public interface AppointmentRepository extends MongoRepository<Appointment, String> {
 
-    List<Appointment> findByUserId(String userId);
+    List<Appointment> findByDoctorId(String doctorId);
+
+    List<Appointment> findByPatientId(String patientId);
 
     List<Appointment> findByStartTimeBetween(LocalDateTime start, LocalDateTime end);
 
-    List<Appointment> findByUserIdAndStartTimeBetween(String userId, LocalDateTime start, LocalDateTime end);
+    List<Appointment> findByDoctorIdAndStartTimeBetween(String doctorId, LocalDateTime start, LocalDateTime end);
 
-    List<Appointment> findByCategory(String category);
+    List<Appointment> findByPatientIdAndStartTimeBetween(String patientId, LocalDateTime start, LocalDateTime end);
 
     List<Appointment> findByStatus(String status);
 
-    @Query("{ 'userId': ?0, $and: [ " +
+    @Query("{ 'doctorId': ?0, $and: [ " +
             "{ 'startTime': { $lt: ?2 } }, " +
             "{ 'endTime': { $gt: ?1 } }, " +
             "{ 'status': 'scheduled' } ] }")
-    List<Appointment> findCollision(String userId, LocalDateTime startTime, LocalDateTime endTime);
+    List<Appointment> findDoctorCollision(String doctorId, LocalDateTime startTime, LocalDateTime endTime);
+
+    @Query("{ 'patientId': ?0, $and: [ " +
+            "{ 'startTime': { $lt: ?2 } }, " +
+            "{ 'endTime': { $gt: ?1 } }, " +
+            "{ 'status': 'scheduled' } ] }")
+    List<Appointment> findPatientCollision(String patientId, LocalDateTime startTime, LocalDateTime endTime);
+
 
 }

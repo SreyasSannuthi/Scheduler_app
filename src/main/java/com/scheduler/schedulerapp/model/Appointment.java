@@ -17,10 +17,12 @@ public class Appointment {
     private String id;
     private String title;
     private String description;
-    private String userId;
+    private String doctorId;
+    private String patientId;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
     private String status = "scheduled";
-    private String category = "work";
 
 }

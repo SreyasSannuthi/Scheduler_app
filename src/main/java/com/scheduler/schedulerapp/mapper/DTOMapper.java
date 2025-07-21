@@ -1,10 +1,13 @@
 package com.scheduler.schedulerapp.mapper;
 
 import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
-import com.scheduler.schedulerapp.dto.UserResponseDTO;
+import com.scheduler.schedulerapp.dto.DoctorResponseDTO;
+import com.scheduler.schedulerapp.dto.PatientResponseDTO;
 import com.scheduler.schedulerapp.model.Appointment;
-import com.scheduler.schedulerapp.model.User;
-import com.scheduler.schedulerapp.repository.UserRepository;
+import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.Patient;
+import com.scheduler.schedulerapp.repository.DoctorRepository;
+import com.scheduler.schedulerapp.repository.PatientRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,15 +21,28 @@ public class DTOMapper {
     private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
     @Autowired
-    private UserRepository userRepository;
+    private DoctorRepository doctorRepository;
 
-    public UserResponseDTO toUserResponseDTO(User user) {
-        UserResponseDTO dto = new UserResponseDTO();
-        dto.setId(user.getId());
-        dto.setName(user.getName());
-        dto.setEmail(user.getEmail());
-        dto.setRole(user.getRole());
-        dto.setDisplayName(user.getName() + " (" + user.getRole() + ")");
+    @Autowired
+    private PatientRepository patientRepository;
+
+    public DoctorResponseDTO toDoctorResponseDTO(Doctor doctor) {
+        DoctorResponseDTO dto = new DoctorResponseDTO();
+        dto.setId(doctor.getId());
+        dto.setName(doctor.getName());
+        dto.setEmail(doctor.getEmail());
+        dto.setRole(doctor.getRole());
+        return dto;
+    }
+
+    public PatientResponseDTO toPatientResponseDTO(Patient patient) {
+        PatientResponseDTO dto = new PatientResponseDTO();
+        dto.setId(patient.getId());
+        dto.setName(patient.getName());
+        dto.setEmail(patient.getEmail());
+        dto.setPhoneNumber(patient.getPhoneNumber());
+        dto.setAge(patient.getAge());
+        dto.setRole(patient.getRole());
         return dto;
     }
 
@@ -35,29 +51,21 @@ public class DTOMapper {
         dto.setId(appointment.getId());
         dto.setTitle(appointment.getTitle());
         dto.setDescription(appointment.getDescription());
-        dto.setUserId(appointment.getUserId());
+        dto.setDoctorId(appointment.getDoctorId());
+        dto.setPatientId(appointment.getPatientId());
         dto.setStartTime(appointment.getStartTime().format(ISO_FORMATTER));
         dto.setEndTime(appointment.getEndTime().format(ISO_FORMATTER));
         dto.setStatus(appointment.getStatus());
-        dto.setCategory(appointment.getCategory());
-        dto.setCategoryColor(getCategoryColor(appointment.getCategory()));
+        dto.setCreatedAt(appointment.getCreatedAt().format(ISO_FORMATTER));
+        dto.setUpdatedAt(appointment.getUpdatedAt().format(ISO_FORMATTER));
         dto.setDuration(calculateDuration(appointment));
 
-        Optional<User> user = userRepository.findById(appointment.getUserId());
-        dto.setUserName(user.map(User::getName).orElse("Unknown User"));
+        Optional<Doctor> doctor = doctorRepository.findById(appointment.getDoctorId());
+        dto.setDoctorName(doctor.map(Doctor::getName).orElse("Unknown doctor"));
 
+        Optional<Patient> patient = patientRepository.findById(appointment.getPatientId());
+        dto.setPatientName(patient.map(Patient::getName).orElse("Unknown patient"));
         return dto;
-    }
-
-    private String getCategoryColor(String category) {
-        return switch (category) {
-            case "work" -> "#3174ad";
-            case "personal" -> "#28a745";
-            case "medical" -> "#dc3545";
-            case "education" -> "#6f42c1";
-            case "social" -> "#ffc107";
-            default -> "#6c757d";
-        };
     }
 
     private String calculateDuration(Appointment appointment) {

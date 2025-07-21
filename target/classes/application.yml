@@ -1,0 +1,52 @@
+spring:
+  application:
+    name: ${SPRING_APPLICATION_NAME}
+
+  data:
+    mongodb:
+      uri: ${MONGODB_URI}
+
+  graphql:
+    graphiql:
+      enabled: ${SPRING_GRAPHQL_GRAPHIQL_ENABLED}
+      path: ${SPRING_GRAPHQL_GRAPHIQL_PATH}
+
+server:
+  port: ${SERVER_PORT:8080}
+
+logging:
+  level:
+    org.springframework.data.mongodb: ${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_DATA_MONGODB}
+
+jwt:
+  secret: ${JWT_SECRET}
+  expiration: ${JWT_EXPIRATION}
+
+graphql:
+  playground:
+    enabled: true
+    endpoint: /graphql
+    subscriptionEndpoint: /subscriptions
+    staticPath: /playground
+    title: Scheduler GraphQL Playground
+  voyager:
+    enabled: true
+    endpoint: /graphql
+    staticPath: /voyager
+    title: Scheduler GraphQL Voyager
+
+
+#  spring.application.name=${SPRING_APPLICATION_NAME:schedulerapp}
+#
+#  # MongoDB Atlas Configuration
+#  spring.data.mongodb.uri=${MONGODB_URI}
+#
+#  #GraphQL Configuration
+#  spring.graphql.graphiql.enabled=${SPRING_GRAPHQL_GRAPHIQL_ENABLED:true}
+#  spring.graphql.graphiql.path=${SPRING_GRAPHQL_GRAPHIQL_PATH:/graphiql}
+#
+#  # Server Configuration
+#  server.port=${SERVER_PORT:8080}
+#
+#  # Logging
+#  logging.level.org.springframework.data.mongodb=${LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_DATA_MONGODB:DEBUG}

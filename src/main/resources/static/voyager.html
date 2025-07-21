@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>GraphQL Voyager</title>
+    <link rel="stylesheet" href="https://unpkg.com/graphql-voyager/dist/voyager.css" />
+    <style>
+        html, body {
+          height: 100%;
+          margin: 0;
+          overflow: hidden;
+        }
+        #voyager {
+          height: 100%;
+        }
+    </style>
+</head>
+<body>
+<div id="voyager">Loading...</div>
+<script src="https://unpkg.com/graphql-voyager/dist/voyager.min.js"></script>
+<script>
+    GraphQLVoyager.init(document.getElementById('voyager'), {
+      introspection: {
+        url: 'http://localhost:8080/graphql'
+      }
+    });
+</script>
+</body>
+</html>
