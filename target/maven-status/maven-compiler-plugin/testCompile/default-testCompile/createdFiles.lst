@@ -6,5 +6,6 @@ com/scheduler/schedulerapp/service/AppointmentServiceImplTest$1.class
 com/scheduler/schedulerapp/resolver/AuthResolverTest.class
 com/scheduler/schedulerapp/resolver/AppointmentResolverTest.class
 com/scheduler/schedulerapp/SchedulerappApplicationTests.class
+com/scheduler/schedulerapp/resolver/SignupResolverTest.class
 com/scheduler/schedulerapp/service/DoctorServiceImplTest.class
 com/scheduler/schedulerapp/service/AuthServiceImplTest.class

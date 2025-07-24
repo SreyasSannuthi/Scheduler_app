@@ -40,8 +40,7 @@ public class AppointmentResolver {
     private DTOMapper dtoMapper;
 
     private static final Set<String> ADMIN_IDS = Set.of(
-            "687de135cbfac1486c629ade",
-            "68760865c47985c69cf4c4c1");
+            "6881030c3cf8e56c4424404d");
 
     @QueryMapping
     public List<AppointmentResponseDTO> appointments(@Argument String adminId) {
@@ -219,6 +218,7 @@ public class AppointmentResolver {
         appointment.setDescription(input.getDescription());
         appointment.setDoctorId(input.getDoctorId());
         appointment.setPatientId(input.getPatientId());
+        appointment.setBranchId(input.getBranchId());
         appointment.setStartTime(startTime);
         appointment.setEndTime(endTime);
         appointment.setStatus(input.getStatus() != null ? input.getStatus() : "scheduled");
@@ -262,6 +262,9 @@ public class AppointmentResolver {
         }
         if (input.getStatus() != null) {
             appointment.setStatus(input.getStatus());
+        }
+        if (input.getBranchId() != null) {
+            appointment.setBranchId(input.getBranchId());
         }
 
         Appointment updatedAppointment = appointmentService.updateAppointment(id, appointment);

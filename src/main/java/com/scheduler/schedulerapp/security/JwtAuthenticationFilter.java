@@ -32,8 +32,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authorizationHeader = request.getHeader("Authorization");
+        String requestURI = request.getRequestURI();
+        String method = request.getMethod();
 
+        logger.debug("Processing request: {} {}", method, requestURI);
+
+        if (requestURI.equals("/graphql") && "POST".equals(method)) {
+            String contentType = request.getContentType();
+            if (contentType != null && contentType.contains("application/json")) {
+                logger.debug("GraphQL request detected, checking for JWT token");
+            }
+        }
+
+        final String authorizationHeader = request.getHeader("Authorization");
         String username = null;
         String jwt = null;
 
@@ -41,21 +52,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             jwt = authorizationHeader.substring(7);
             try {
                 username = jwtUtil.extractUsername(jwt);
+                logger.debug("Extracted username from JWT: {}", username);
             } catch (Exception e) {
                 logger.error("Error extracting username from JWT token", e);
             }
+        } else {
+            logger.debug("No Authorization header found or doesn't start with Bearer");
         }
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
+            try {
+                UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
 
-            if (jwtUtil.validateToken(jwt, userDetails)) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
-                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+                if (jwtUtil.validateToken(jwt, userDetails)) {
+                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                    SecurityContextHolder.getContext().setAuthentication(authToken);
+                    logger.debug("Successfully authenticated user: {}", username);
+                } else {
+                    logger.debug("JWT token validation failed for user: {}", username);
+                }
+            } catch (Exception e) {
+                logger.error("Error authenticating user: {}", username, e);
             }
         }
+
         filterChain.doFilter(request, response);
     }
 }

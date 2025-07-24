@@ -16,12 +16,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import com.scheduler.schedulerapp.model.Doctor;
 import com.scheduler.schedulerapp.model.Patient;
 
-import java.util.Collections;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,7 +44,7 @@ class AuthServiceImplTest {
     private static final String PASSWORD = "secret";
 
     private Doctor doctorUser(String email) {
-        return new Doctor("1", "Dr. John Doe", email, "doctor", "encPwd");
+        return new Doctor("1", "Dr. John Doe", email, "doctor", "encPwd", "July 22 2025 5:51 PM", "", true);
     }
 
     private Patient patientUser(String email) {

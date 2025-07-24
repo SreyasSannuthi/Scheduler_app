@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
-@Document(collection = "doctors")
+@Document(collection = "hospitalStaff")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -35,6 +35,12 @@ public class Doctor implements UserDetails {
 
     @NotBlank(message = "Password cannot be blank")
     private String password;
+
+    private String startDate;
+
+    private String endDate;
+
+    private Boolean isActive = true;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -65,4 +71,10 @@ public class Doctor implements UserDetails {
     public boolean isCredentialsNonExpired() {
         return true;
     }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }

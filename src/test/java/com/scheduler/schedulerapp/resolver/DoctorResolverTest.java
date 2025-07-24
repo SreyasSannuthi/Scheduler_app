@@ -42,19 +42,26 @@ class DoctorResolverTest {
 
     @BeforeEach
     void setUp() {
-        doctor1 = new Doctor("1", "Dr. John Smith", "john.smith@hospital.com", "doctor", "password123");
-        doctor2 = new Doctor("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor", "password123");
-        adminDoctor = new Doctor("3", "Dr. Admin", "admin@hospital.com", "admin", "admin123");
+        doctor1 = new Doctor("1", "Dr. John Smith", "john.smith@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
+        doctor2 = new Doctor("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
+        adminDoctor = new Doctor("3", "Dr. Admin", "admin@hospital.com", "admin", "admin123",
+                "July 22 2025 5:51 PM", "", true);
 
-        doctorResponseDTO1 = new DoctorResponseDTO("1", "Dr. John Smith", "john.smith@hospital.com", "doctor");
-        doctorResponseDTO2 = new DoctorResponseDTO("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor");
-        adminDoctorResponseDTO = new DoctorResponseDTO("3", "Dr. Admin", "admin@hospital.com", "admin");
+        doctorResponseDTO1 = new DoctorResponseDTO("1", "Dr. John Smith", "john.smith@hospital.com", "doctor",
+                "July 22 2025 5:51 PM", "", true);
+        doctorResponseDTO2 = new DoctorResponseDTO("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor",
+                "July 22 2025 5:51 PM", "", true);
+        adminDoctorResponseDTO = new DoctorResponseDTO("3", "Dr. Admin", "admin@hospital.com", "admin",
+                "July 22 2025 5:51 PM", "", true);
     }
 
     @Test
     void doctors_WhenMultipleDoctorsExist_ShouldReturnListOfDoctorResponseDTO() {
         List<Doctor> doctors = Arrays.asList(doctor1, doctor2, adminDoctor);
-        List<DoctorResponseDTO> expectedDTOs = Arrays.asList(doctorResponseDTO1, doctorResponseDTO2, adminDoctorResponseDTO);
+        List<DoctorResponseDTO> expectedDTOs = Arrays.asList(doctorResponseDTO1, doctorResponseDTO2,
+                adminDoctorResponseDTO);
         when(doctorService.getAllDoctors()).thenReturn(doctors);
         when(dtoMapper.toDoctorResponseDTO(doctor1)).thenReturn(doctorResponseDTO1);
         when(dtoMapper.toDoctorResponseDTO(doctor2)).thenReturn(doctorResponseDTO2);

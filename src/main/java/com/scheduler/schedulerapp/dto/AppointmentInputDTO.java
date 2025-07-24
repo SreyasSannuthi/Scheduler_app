@@ -32,6 +32,8 @@ public class AppointmentInputDTO {
     @Pattern(regexp = "scheduled|cancelled|completed", message = "Invalid status")
     private String status;
 
+    private String branchId;
+
     @AssertTrue(message = "End time must be after start time")
     public boolean isValidTimeRange() {
         if (startTime == null || endTime == null) return true;

@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -34,10 +35,14 @@ class DoctorServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        doctor1 = new Doctor("1", "Dr. John Smith", "john.smith@hospital.com", "doctor","password123");
-        doctor2 = new Doctor("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor","password123");
-        doctor3 = new Doctor("3", "Dr. Bob Wilson", "bob.wilson@hospital.com", "doctor", "password123");
-        adminDoctor = new Doctor("4", "Dr. Admin", "admin@hospital.com", "admin", "admin123");
+        doctor1 = new Doctor("1", "Dr. John Smith", "john.smith@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
+        doctor2 = new Doctor("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
+        doctor3 = new Doctor("3", "Dr. Bob Wilson", "bob.wilson@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
+        adminDoctor = new Doctor("4", "Dr. Admin", "admin@hospital.com", "admin", "admin123",
+                "July 22 2025 5:51 PM", "", true);
     }
 
     @Test
@@ -132,8 +137,10 @@ class DoctorServiceImplTest {
 
     @Test
     void createDoctor_ShouldSaveAndReturnDoctor() {
-        Doctor newDoctor = new Doctor(null, "Dr. New Doctor", "new.doctor@hospital.com", "doctor","password123");
-        Doctor savedDoctor = new Doctor("5", "Dr. New Doctor", "new.doctor@hospital.com", "doctor","password123");
+        Doctor newDoctor = new Doctor(null, "Dr. New Doctor", "new.doctor@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
+        Doctor savedDoctor = new Doctor("5", "Dr. New Doctor", "new.doctor@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
         when(doctorRepository.save(any(Doctor.class))).thenReturn(savedDoctor);
         Doctor result = doctorService.createDoctor(newDoctor);
         assertNotNull(result);
@@ -155,8 +162,10 @@ class DoctorServiceImplTest {
     @Test
     void updateDoctor_ShouldSetIdAndSaveDoctor() {
         String doctorId = "1";
-        Doctor updatedDoctorInput = new Doctor("999", "Dr. Updated Name", "updated@hospital.com", "admin","admin123");
-        Doctor savedDoctor = new Doctor("1", "Dr. Updated Name", "updated@hospital.com", "admin", "admin123");
+        Doctor updatedDoctorInput = new Doctor("999", "Dr. Updated Name", "updated@hospital.com", "admin", "admin123",
+                "July 22 2025 5:51 PM", "", true);
+        Doctor savedDoctor = new Doctor("1", "Dr. Updated Name", "updated@hospital.com", "admin", "admin123",
+                "July 22 2025 5:51 PM", "", true);
         when(doctorRepository.save(any(Doctor.class))).thenReturn(savedDoctor);
         Doctor result = doctorService.updateDoctor(doctorId, updatedDoctorInput);
         assertNotNull(result);
@@ -171,8 +180,10 @@ class DoctorServiceImplTest {
     @Test
     void updateDoctor_WithDifferentOriginalId_ShouldOverwriteIdAndSave() {
         String doctorId = "1";
-        Doctor doctorWithDifferentId = new Doctor("999", "Dr. Different", "different@hospital.com", "doctor", "password123");
-        Doctor savedDoctor = new Doctor("1", "Dr. Different", "different@hospital.com", "doctor", "password123");
+        Doctor doctorWithDifferentId = new Doctor("999", "Dr. Different", "different@hospital.com", "doctor",
+                "password123", "July 22 2025 5:51 PM", "", true);
+        Doctor savedDoctor = new Doctor("1", "Dr. Different", "different@hospital.com", "doctor", "password123",
+                "July 22 2025 5:51 PM", "", true);
         when(doctorRepository.save(any(Doctor.class))).thenReturn(savedDoctor);
         Doctor result = doctorService.updateDoctor(doctorId, doctorWithDifferentId);
         assertNotNull(result);

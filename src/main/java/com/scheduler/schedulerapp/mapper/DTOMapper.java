@@ -3,11 +3,18 @@ package com.scheduler.schedulerapp.mapper;
 import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
 import com.scheduler.schedulerapp.dto.DoctorResponseDTO;
 import com.scheduler.schedulerapp.dto.PatientResponseDTO;
+import com.scheduler.schedulerapp.dto.DoctorBranchMappingResponseDTO;
+import com.scheduler.schedulerapp.dto.HospitalBranchResponseDTO;
+
 import com.scheduler.schedulerapp.model.Appointment;
 import com.scheduler.schedulerapp.model.Doctor;
 import com.scheduler.schedulerapp.model.Patient;
+import com.scheduler.schedulerapp.model.HospitalBranch;
+import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.PatientRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +39,9 @@ public class DTOMapper {
         dto.setName(doctor.getName());
         dto.setEmail(doctor.getEmail());
         dto.setRole(doctor.getRole());
+        dto.setStartDate(doctor.getStartDate());
+        dto.setEndDate(doctor.getEndDate());
+        dto.setIsActive(doctor.getIsActive());
         return dto;
     }
 
@@ -56,6 +66,7 @@ public class DTOMapper {
         dto.setStartTime(appointment.getStartTime().format(ISO_FORMATTER));
         dto.setEndTime(appointment.getEndTime().format(ISO_FORMATTER));
         dto.setStatus(appointment.getStatus());
+        dto.setBranchId(appointment.getBranchId());
         dto.setCreatedAt(appointment.getCreatedAt().format(ISO_FORMATTER));
         dto.setUpdatedAt(appointment.getUpdatedAt().format(ISO_FORMATTER));
         dto.setDuration(calculateDuration(appointment));
@@ -65,6 +76,10 @@ public class DTOMapper {
 
         Optional<Patient> patient = patientRepository.findById(appointment.getPatientId());
         dto.setPatientName(patient.map(Patient::getName).orElse("Unknown patient"));
+
+        if (appointment.getBranchId() != null) {
+            dto.setBranchLocation("Branch Location");
+        }
         return dto;
     }
 
@@ -80,5 +95,34 @@ public class DTOMapper {
         } else {
             return hours + " hours " + minutes + " minutes";
         }
+    }
+
+    public HospitalBranchResponseDTO toHospitalBranchResponseDTO(HospitalBranch branch) {
+        HospitalBranchResponseDTO dto = new HospitalBranchResponseDTO();
+        dto.setId(branch.getId());
+        dto.setBranchCode(branch.getBranchCode());
+        dto.setAddress(branch.getAddress());
+        dto.setCity(branch.getCity());
+        dto.setState(branch.getState());
+        dto.setZipCode(branch.getZipCode());
+        dto.setEmail(branch.getEmail());
+        dto.setPhoneNumber(branch.getPhoneNumber());
+        dto.setIsActive(branch.getIsActive());
+        dto.setStartedAt(branch.getStartedAt() != null ? branch.getStartedAt().toString() : null);
+        return dto;
+    }
+
+    public DoctorBranchMappingResponseDTO toDoctorBranchMappingResponseDTO(
+            DoctorBranchMapping mapping,
+            String doctorName,
+            String branchCode) {
+
+        DoctorBranchMappingResponseDTO dto = new DoctorBranchMappingResponseDTO();
+        dto.setId(mapping.getId());
+        dto.setDoctorId(mapping.getDoctorId());
+        dto.setBranchId(mapping.getBranchId());
+        dto.setDoctorName(doctorName);
+        dto.setBranchCode(branchCode);
+        return dto;
     }
 }

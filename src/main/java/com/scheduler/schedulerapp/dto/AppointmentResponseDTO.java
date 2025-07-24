@@ -21,4 +21,6 @@ public class AppointmentResponseDTO {
     private String updatedAt;
     private String status;
     private String duration;
+    private String branchId;
+    private String branchLocation;
 }

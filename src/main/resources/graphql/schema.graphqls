@@ -3,6 +3,9 @@ type Doctor {
     name: String!
     email: String!
     role: String!
+    startDate: String
+    endDate: String
+    isActive: String
 }
 
 type Patient {
@@ -12,6 +15,80 @@ type Patient {
     phoneNumber: String!
     age: Int!
     role: String!
+}
+
+type Appointment {
+    id: ID!
+    title: String!
+    description: String
+    doctorId: String!
+    patientId: String!
+    doctorName: String!
+    patientName: String!
+    startTime: String!
+    endTime: String!
+    createdAt: String!
+    updatedAt: String!
+    status: String!
+    duration: String!
+    branchId: String
+    branchLocation: String
+}
+
+type HospitalBranch {
+    id: ID!
+    branchCode: String!
+    address: String!
+    city: String!
+    state: String!
+    zipCode: String
+    email: String
+    phoneNumber: String!
+    isActive: Boolean!
+    startedAt: String
+}
+
+type DoctorBranchMapping {
+    id: ID!
+    doctorId: String!
+    branchId: String!
+    doctorName: String!
+    branchCode: String!
+}
+
+type AuthResponse {
+    token: String
+    username: String
+    role: String
+    message: String!
+}
+
+type SignupResponse {
+    message: String!
+    success: Boolean!
+    userId: String
+    email: String
+    role: String
+}
+
+input AppointmentInput {
+    title: String!
+    description: String
+    doctorId: String!
+    patientId: String!
+    startTime: String!
+    endTime: String!
+    status: String
+    branchId: String
+}
+
+input AppointmentUpdateInput {
+    title: String
+    description: String
+    startTime: String
+    endTime: String
+    status: String
+    branchId: String
 }
 
 input DoctorSignupInput {
@@ -30,57 +107,35 @@ input PatientSignupInput {
     age: Int!
 }
 
-type Appointment {
-    id: ID!
-    title: String!
-    description: String
-    doctorId: String!
-    patientId: String!
-    doctorName: String!
-    patientName: String!
-    startTime: String!
-    endTime: String!
-    createdAt: String!
-    updatedAt: String!
-    status: String!
-    duration: String!
-}
-
-type SignupResponse {
-    message: String!
-    success: Boolean!
-    userId: String
+input HospitalBranchInput {
+    branchCode: String!
+    address: String!
+    city: String!
+    state: String!
+    zipCode: String
     email: String
-    role: String
+    phoneNumber: String!
 }
 
-type AuthResponse {
-    token: String
-    username: String
-    role: String
-    message: String!
+input HospitalBranchUpdateInput {
+    branchCode: String
+    address: String
+    city: String
+    state: String
+    zipCode: String
+    email: String
+    phoneNumber: String
+    isActive: Boolean
 }
 
-input AppointmentInput {
-    title: String!
-    description: String
+input DoctorBranchMappingInput {
     doctorId: String!
-    patientId: String!
-    startTime: String!
-    endTime: String!
-    status: String
-}
-
-input AppointmentUpdateInput {
-    title: String
-    description: String
-    startTime: String
-    endTime: String
-    status: String
+    branchId: String!
+    doctorName: String!
+    branchCode: String!
 }
 
 type Query {
-
     getCurrentUser: String
     getCurrentUserRole: String
 
@@ -103,18 +158,35 @@ type Query {
 
     appointmentsByStatus(status: String!, requesterId: ID!): [Appointment!]!
     checkCollision(doctorId: ID!, patientId: ID!, startTime: String!, endTime: String!): [Appointment!]!
+
+    hospitalBranches: [HospitalBranch!]!
+    activeBranches: [HospitalBranch!]!
+    hospitalBranch(id: ID!): HospitalBranch
+
+    doctorBranchMappings: [DoctorBranchMapping!]!
+    doctorBranches(doctorId: ID!): [DoctorBranchMapping!]!
+    branchDoctors(branchId: ID!): [DoctorBranchMapping!]!
 }
 
 type Mutation {
-
     login(email: String!, password: String!): AuthResponse!
     logout: Boolean!
+
+    signupDoctor(input: DoctorSignupInput!): SignupResponse!
+    signupPatient(input: PatientSignupInput!): SignupResponse!
+
+    deleteDoctor(id: ID!): Boolean!
+    deletePatient(id: ID!): Boolean!
 
     createAppointment(input: AppointmentInput!): Appointment!
     updateAppointment(id: ID!, input: AppointmentUpdateInput!, requesterId: ID!): Appointment!
     deleteAppointment(id: ID!, requesterId: ID!): Boolean!
     deleteMultipleAppointments(ids: [ID!]!, requesterId: ID!): Boolean!
 
-    signupDoctor(input: DoctorSignupInput!): SignupResponse!
-    signupPatient(input: PatientSignupInput!): SignupResponse!
+    createHospitalBranch(input: HospitalBranchInput!): HospitalBranch!
+    updateHospitalBranch(id: ID!, input: HospitalBranchUpdateInput!): HospitalBranch!
+    deleteHospitalBranch(id: ID!): Boolean!
+
+    assignDoctorToBranch(input: DoctorBranchMappingInput!): DoctorBranchMapping!
+    removeDoctorFromBranch(doctorId: ID!, branchId: ID!): Boolean!
 }

@@ -5,6 +5,7 @@ import com.scheduler.schedulerapp.security.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -40,14 +41,10 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/voyager.html",
-                                "/graphiql/**",
-                                "/graphql",
-                                "/api/test/public",
-                                "/css/**", "/js/**",
-                                "/images/**", "/static/**"
-                        ).permitAll()
+                        .requestMatchers("/graphql").permitAll() // Allow all GraphQL requests initially
+                        .requestMatchers("/graphiql/**", "/voyager.html").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**", "/static/**").permitAll()
+                        .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

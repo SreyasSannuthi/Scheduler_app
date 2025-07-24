@@ -5,7 +5,10 @@ import com.scheduler.schedulerapp.repository.DoctorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -16,7 +19,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAll();
+        return doctorRepository.findAllWhoIsActive();
     }
 
     @Override
@@ -31,9 +34,13 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public Doctor createDoctor(Doctor doctor) {
+
         if (doctor == null) {
             throw new IllegalArgumentException("Doctor cannot be null");
         }
+
+        doctor.setStartDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd yyyy '-' h:mm a")));
+        doctor.setEndDate("");
         return doctorRepository.save(doctor);
     }
 
@@ -47,6 +54,15 @@ public class DoctorServiceImpl implements DoctorService {
     }
 
     @Override
-    public void deleteDoctor(String id) {doctorRepository.deleteById(id);
+    public void deleteDoctor(String id) {
+        Optional<Doctor> doctorCheck = doctorRepository.findById(id);
+        if (doctorCheck.isPresent()) {
+            Doctor doctor = doctorCheck.get();
+            doctor.setIsActive(false);
+            doctor.setEndDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd yyyy '-' h:mm a")));
+            doctorRepository.save(doctor);
+        }
+
+        //doctorRepository.deleteById(id);
     }
 }

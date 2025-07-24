@@ -4,6 +4,7 @@ import com.scheduler.schedulerapp.dto.PatientResponseDTO;
 import com.scheduler.schedulerapp.mapper.DTOMapper;
 import com.scheduler.schedulerapp.service.patient.PatientService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
 import org.springframework.graphql.data.method.annotation.Argument;
 import org.springframework.stereotype.Controller;
@@ -39,5 +40,15 @@ public class PatientResolver {
         return patientService.getPatientsByRole(role).stream()
                 .map(dtoMapper::toPatientResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @MutationMapping
+    public Boolean deletePatient(@Argument String id) {
+        try {
+            patientService.deletePatient(id);
+            return true;
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to delete patient: " + e.getMessage());
+        }
     }
 }

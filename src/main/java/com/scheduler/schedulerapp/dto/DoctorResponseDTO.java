@@ -12,4 +12,7 @@ public class DoctorResponseDTO {
     private String name;
     private String email;
     private String role;
+    private String startDate;
+    private String endDate;
+    private Boolean isActive;
 }

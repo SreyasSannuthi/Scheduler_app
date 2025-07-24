@@ -24,5 +24,5 @@ public class Appointment {
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private String status = "scheduled";
-
+    private String branchId;
 }

@@ -57,7 +57,7 @@ class AppointmentResolverTest {
 
     @BeforeEach
     void setUp() {
-        adminId = "68760865c47985c69cf4c4c1";
+        adminId = "687fe5c0d551f766fc569ff3";
         doctorId = "doctor123";
         patientId = "patient123";
         startTime = LocalDateTime.of(2025, 8, 15, 10, 0);
