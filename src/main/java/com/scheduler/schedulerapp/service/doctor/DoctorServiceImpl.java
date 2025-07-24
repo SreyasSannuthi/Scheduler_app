@@ -18,13 +18,13 @@ public class DoctorServiceImpl implements DoctorService {
     private DoctorRepository doctorRepository;
 
     @Override
-    public List<Doctor> getAllDoctors() {
-        return doctorRepository.findAllWhoIsActive();
+    public Optional<Doctor> getDoctorById(String id) {
+        return doctorRepository.findById(id);
     }
 
     @Override
-    public Optional<Doctor> getDoctorById(String id) {
-        return doctorRepository.findById(id);
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAllWhoIsActive();
     }
 
     @Override

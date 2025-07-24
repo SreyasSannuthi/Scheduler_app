@@ -12,10 +12,9 @@ import java.util.Optional;
 @Repository
 public interface DoctorRepository extends MongoRepository <Doctor, String> {
 
-    List<Doctor> findByRole(String role);
-    Optional<Doctor> findByEmail(String email);
-
     @Query("{'isActive' : true}")
     List<Doctor> findAllWhoIsActive();
 
+    List<Doctor> findByRole(String role);
+    Optional<Doctor> findByEmail(String email);
 }
