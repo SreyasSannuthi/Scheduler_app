@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoctorServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">schedulerapp</a> &gt; <a href="index.source.html" class="el_package">com.scheduler.schedulerapp.service.doctor</a> &gt; <span class="el_source">DoctorServiceImpl.java</span></div><h1>DoctorServiceImpl.java</h1><pre class="source lang-java linenums">package com.scheduler.schedulerapp.service.doctor;
+
+import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.model.Appointment;
+import com.scheduler.schedulerapp.repository.DoctorRepository;
+import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
+import com.scheduler.schedulerapp.repository.AppointmentRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L19">public class DoctorServiceImpl implements DoctorService {</span>
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    private DoctorBranchMappingRepository doctorBranchMappingRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
+
+    @Override
+    public List&lt;Doctor&gt; getAllDoctors() {
+<span class="fc" id="L32">        return doctorRepository.findAllWhoIsActive();</span>
+    }
+
+    @Override
+    public Optional&lt;Doctor&gt; getDoctorById(String id) {
+<span class="fc" id="L37">        return doctorRepository.findById(id);</span>
+    }
+
+    @Override
+    public List&lt;Doctor&gt; getDoctorsByRole(String role) {
+<span class="fc" id="L42">        return doctorRepository.findByRole(role);</span>
+    }
+
+    @Override
+    public Doctor createDoctor(Doctor doctor) {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">        if (doctor == null) {</span>
+<span class="fc" id="L48">            throw new IllegalArgumentException(&quot;Doctor cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L51">        doctor.setStartDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;MMMM dd yyyy '-' h:mm a&quot;)));</span>
+<span class="fc" id="L52">        doctor.setEndDate(&quot;&quot;);</span>
+<span class="fc" id="L53">        doctor.setIsActive(true);</span>
+<span class="fc" id="L54">        return doctorRepository.save(doctor);</span>
+    }
+
+    @Override
+    public Doctor updateDoctor(String id, Doctor doctor) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">        if (doctor == null) {</span>
+<span class="fc" id="L60">            throw new IllegalArgumentException(&quot;Doctor cannot be null&quot;);</span>
+        }
+
+<span class="fc" id="L63">        Optional&lt;Doctor&gt; existingDoctorOpt = doctorRepository.findById(id);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">        if (existingDoctorOpt.isEmpty()) {</span>
+<span class="fc" id="L65">            throw new IllegalArgumentException(&quot;Doctor not found with ID: &quot; + id);</span>
+        }
+
+<span class="nc" id="L68">        Doctor existingDoctor = existingDoctorOpt.get();</span>
+
+<span class="nc bnc" id="L70" title="All 4 branches missed.">        if (doctor.getIsActive() != null &amp;&amp; !doctor.getIsActive().equals(existingDoctor.getIsActive())) {</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (!doctor.getIsActive()) {</span>
+<span class="nc" id="L72">                doctor.setEndDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;MMMM dd yyyy '-' h:mm a&quot;)));</span>
+<span class="nc" id="L73">                removeDoctorMappingsAndAppointments(id);</span>
+<span class="nc" id="L74">                System.out.println(&quot;Doctor &quot; + doctor.getName() + &quot; deactivated at: &quot; + doctor.getEndDate());</span>
+<span class="nc" id="L75">            } else {</span>
+<span class="nc" id="L76">                doctor.setStartDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;MMMM dd yyyy '-' h:mm a&quot;)));</span>
+<span class="nc" id="L77">                doctor.setEndDate(&quot;&quot;);</span>
+<span class="nc" id="L78">                System.out.println(&quot;Doctor &quot; + doctor.getName() + &quot; reactivated. Previous end date preserved: &quot; + existingDoctor.getEndDate());</span>
+            }
+        }
+
+<span class="nc" id="L82">        doctor.setId(id);</span>
+<span class="nc" id="L83">        return doctorRepository.save(doctor);</span>
+    }
+
+    @Override
+    @Transactional
+    public void deleteDoctor(String id) {
+<span class="fc" id="L89">        Optional&lt;Doctor&gt; doctorCheck = doctorRepository.findById(id);</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">        if (doctorCheck.isPresent()) {</span>
+<span class="nc" id="L91">            Doctor doctor = doctorCheck.get();</span>
+
+<span class="nc" id="L93">            doctor.setIsActive(false);</span>
+<span class="nc" id="L94">            doctor.setEndDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern(&quot;MMMM dd yyyy '-' h:mm a&quot;)));</span>
+
+<span class="nc" id="L96">            removeDoctorMappingsAndAppointments(id);</span>
+
+<span class="nc" id="L98">            doctorRepository.save(doctor);</span>
+
+<span class="nc" id="L100">            System.out.println(&quot;Doctor &quot; + doctor.getName() + &quot; has been deactivated and all mappings/appointments handled&quot;);</span>
+<span class="nc" id="L101">        } else {</span>
+<span class="fc" id="L102">            throw new IllegalArgumentException(&quot;Doctor not found with ID: &quot; + id);</span>
+        }
+<span class="nc" id="L104">    }</span>
+
+    @Transactional
+    private void removeDoctorMappingsAndAppointments(String doctorId) {
+        try {
+<span class="nc" id="L109">            removeDoctorBranchMappings(doctorId);</span>
+
+<span class="nc" id="L111">            handleDoctorAppointments(doctorId);</span>
+
+<span class="nc" id="L113">        } catch (Exception e) {</span>
+<span class="nc" id="L114">            System.err.println(&quot;Error handling doctor deactivation for doctor &quot; + doctorId + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L115">            throw new RuntimeException(&quot;Failed to handle doctor deactivation: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L117">    }</span>
+
+    private void removeDoctorBranchMappings(String doctorId) {
+        try {
+<span class="nc" id="L121">            List&lt;DoctorBranchMapping&gt; mappings = doctorBranchMappingRepository.findByDoctorId(doctorId);</span>
+
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            if (!mappings.isEmpty()) {</span>
+<span class="nc" id="L124">                doctorBranchMappingRepository.deleteAll(mappings);</span>
+<span class="nc" id="L125">                System.out.println(&quot;Removed &quot; + mappings.size() + &quot; branch mappings for doctor ID: &quot; + doctorId);</span>
+            }
+<span class="nc" id="L127">        } catch (Exception e) {</span>
+<span class="nc" id="L128">            System.err.println(&quot;Error removing doctor mappings for doctor &quot; + doctorId + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L129">            throw new RuntimeException(&quot;Failed to remove doctor mappings: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L131">    }</span>
+
+ void handleDoctorAppointments(String doctorId) {
+        try {
+<span class="nc" id="L135">            List&lt;Appointment&gt; appointments = appointmentRepository.findByDoctorId(doctorId);</span>
+
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            if (!appointments.isEmpty()) {</span>
+<span class="nc" id="L138">                LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L139">                int cancelledCount = 0;</span>
+<span class="nc" id="L140">                int preservedCount = 0;</span>
+
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                for (Appointment appointment : appointments) {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                    if (appointment.getStartTime().isAfter(now) &amp;&amp;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                            &quot;scheduled&quot;.equals(appointment.getStatus())) {</span>
+<span class="nc" id="L145">                        appointment.setStatus(&quot;cancelled&quot;);</span>
+<span class="nc" id="L146">                        appointment.setUpdatedAt(LocalDateTime.now());</span>
+<span class="nc" id="L147">                        appointmentRepository.save(appointment);</span>
+<span class="nc" id="L148">                        cancelledCount++;</span>
+<span class="nc" id="L149">                    } else {</span>
+<span class="nc" id="L150">                        preservedCount++;</span>
+                    }
+                }
+
+<span class="nc" id="L154">                System.out.println(&quot;Doctor appointments handled - Cancelled: &quot; + cancelledCount +</span>
+<span class="nc" id="L155">                        &quot;, Preserved: &quot; + preservedCount + &quot; for doctor ID: &quot; + doctorId);</span>
+            }
+<span class="nc" id="L157">        } catch (Exception e) {</span>
+<span class="nc" id="L158">            System.err.println(&quot;Error handling appointments for doctor &quot; + doctorId + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L159">            throw new RuntimeException(&quot;Failed to handle doctor appointments: &quot; + e.getMessage());</span>
+        }
+<span class="nc" id="L161">    }</span>
+
+    @Transactional
+    public Doctor reactivateDoctor(String id) {
+<span class="nc" id="L165">        Doctor doctor = doctorRepository.findById(id)</span>
+<span class="nc" id="L166">                .orElseThrow(() -&gt; new RuntimeException(&quot;Doctor not found with ID: &quot; + id));</span>
+
+<span class="nc" id="L168">        doctor.setIsActive(true);</span>
+
+<span class="nc" id="L170">        System.out.println(&quot;Doctor &quot; + doctor.getName() + &quot; reactivated. Previous end date preserved: &quot; + doctor.getEndDate());</span>
+
+<span class="nc" id="L172">        return doctorRepository.save(doctor);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

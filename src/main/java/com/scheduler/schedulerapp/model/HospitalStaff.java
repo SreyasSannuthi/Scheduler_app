@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import static com.scheduler.schedulerapp.model.UserRole.*;
 
 import java.util.Collection;
 import java.util.List;
@@ -18,7 +19,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Doctor implements UserDetails {
+public class HospitalStaff implements UserDetails {
 
     @Id
     private String id;
@@ -41,6 +42,42 @@ public class Doctor implements UserDetails {
     private String endDate;
 
     private Boolean isActive = true;
+
+    public UserRole getRoleEnum() {
+        try {
+            return UserRole.fromString(this.role);
+        } catch (Exception e) {
+            return DOCTOR;
+        }
+    }
+
+    public void setRoleEnum(UserRole roleEnum) {
+        this.role = roleEnum.getValue();
+    }
+
+    public boolean isAdmin() {
+        return ADMIN.getValue().equalsIgnoreCase(this.role);
+    }
+
+    public boolean isDoctor() {
+        return DOCTOR.getValue().equalsIgnoreCase(this.role);
+    }
+
+    public boolean isReceptionist() {
+        return RECEPTIONIST.getValue().equalsIgnoreCase(this.role);
+    }
+
+    public boolean isCustomerCare() {
+        return CUSTOMER_CARE.getValue().equalsIgnoreCase(this.role);
+    }
+
+    public boolean hasFullAppointmentAccess() {
+        return isAdmin() || isCustomerCare();
+    }
+
+    public boolean hasBranchAppointmentAccess() {
+        return isAdmin() || isCustomerCare() || isReceptionist();
+    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

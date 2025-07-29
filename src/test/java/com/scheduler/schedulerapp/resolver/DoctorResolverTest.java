@@ -2,7 +2,7 @@ package com.scheduler.schedulerapp.resolver;
 
 import com.scheduler.schedulerapp.dto.DoctorResponseDTO;
 import com.scheduler.schedulerapp.mapper.DTOMapper;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.service.doctor.DoctorService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -33,20 +33,20 @@ class DoctorResolverTest {
     @InjectMocks
     private DoctorResolver doctorResolver;
 
-    private Doctor doctor1;
-    private Doctor doctor2;
-    private Doctor adminDoctor;
+    private HospitalStaff doctor1;
+    private HospitalStaff doctor2;
+    private HospitalStaff adminDoctor;
     private DoctorResponseDTO doctorResponseDTO1;
     private DoctorResponseDTO doctorResponseDTO2;
     private DoctorResponseDTO adminDoctorResponseDTO;
 
     @BeforeEach
     void setUp() {
-        doctor1 = new Doctor("1", "Dr. John Smith", "john.smith@hospital.com", "doctor", "password123",
+        doctor1 = new HospitalStaff("1", "Dr. John Smith", "john.smith@hospital.com", "doctor", "password123",
                 "July 22 2025 5:51 PM", "", true);
-        doctor2 = new Doctor("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor", "password123",
+        doctor2 = new HospitalStaff("2", "Dr. Jane Doe", "jane.doe@hospital.com", "doctor", "password123",
                 "July 22 2025 5:51 PM", "", true);
-        adminDoctor = new Doctor("3", "Dr. Admin", "admin@hospital.com", "admin", "admin123",
+        adminDoctor = new HospitalStaff("3", "Dr. Admin", "admin@hospital.com", "admin", "admin123",
                 "July 22 2025 5:51 PM", "", true);
 
         doctorResponseDTO1 = new DoctorResponseDTO("1", "Dr. John Smith", "john.smith@hospital.com", "doctor",
@@ -59,7 +59,7 @@ class DoctorResolverTest {
 
     @Test
     void doctors_WhenMultipleDoctorsExist_ShouldReturnListOfDoctorResponseDTO() {
-        List<Doctor> doctors = Arrays.asList(doctor1, doctor2, adminDoctor);
+        List<HospitalStaff> doctors = Arrays.asList(doctor1, doctor2, adminDoctor);
         List<DoctorResponseDTO> expectedDTOs = Arrays.asList(doctorResponseDTO1, doctorResponseDTO2,
                 adminDoctorResponseDTO);
         when(doctorService.getAllDoctors()).thenReturn(doctors);
@@ -143,7 +143,7 @@ class DoctorResolverTest {
     @Test
     void doctorsByRole_WhenValidRoleWithExistingDoctors_ShouldReturnFilteredList() {
         String role = "doctor";
-        List<Doctor> doctors = Arrays.asList(doctor1, doctor2);
+        List<HospitalStaff> doctors = Arrays.asList(doctor1, doctor2);
         List<DoctorResponseDTO> expectedDTOs = Arrays.asList(doctorResponseDTO1, doctorResponseDTO2);
         when(doctorService.getDoctorsByRole(role)).thenReturn(doctors);
         when(dtoMapper.toDoctorResponseDTO(doctor1)).thenReturn(doctorResponseDTO1);

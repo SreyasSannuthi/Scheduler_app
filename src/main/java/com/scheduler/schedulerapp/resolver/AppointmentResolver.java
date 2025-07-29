@@ -5,9 +5,11 @@ import com.scheduler.schedulerapp.dto.AppointmentUpdateInputDTO;
 import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
 import com.scheduler.schedulerapp.mapper.DTOMapper;
 import com.scheduler.schedulerapp.model.Appointment;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
 import com.scheduler.schedulerapp.model.Patient;
 import com.scheduler.schedulerapp.service.appointment.AppointmentService;
+import com.scheduler.schedulerapp.service.branchmapping.DoctorBranchMappingService;
 import com.scheduler.schedulerapp.service.doctor.DoctorService;
 import com.scheduler.schedulerapp.service.patient.PatientService;
 import jakarta.validation.Valid;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Controller;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -39,16 +42,75 @@ public class AppointmentResolver {
     @Autowired
     private DTOMapper dtoMapper;
 
+    @Autowired
+    private DoctorBranchMappingService doctorBranchMappingService;
+
     private static final Set<String> ADMIN_IDS = Set.of(
-            "6881030c3cf8e56c4424404d");
+            "6887727cf3498c1806036f28");
+
+    private boolean hasFullAppointmentAccess(String userId) {
+        Optional<HospitalStaff> user = doctorService.getDoctorById(userId);
+        if (user.isPresent()) {
+            return user.get().hasFullAppointmentAccess(); // admin || customer_care
+        }
+        return false;
+    }
 
     @QueryMapping
-    public List<AppointmentResponseDTO> appointments(@Argument String adminId) {
-        if (!ADMIN_IDS.contains(adminId)) {
-            throw new SecurityException("Access denied: Only admin can view all appointments");
+    public List<AppointmentResponseDTO> appointments(@Argument String requesterId) {
+        Optional<HospitalStaff> user = doctorService.getDoctorById(requesterId);
+        if (user.isEmpty()) {
+            throw new SecurityException("User not found");
         }
 
-        List<Appointment> appointments = appointmentService.getAllAppointments();
+        HospitalStaff doctor = user.get();
+        List<Appointment> appointments;
+
+        if (doctor.hasFullAppointmentAccess()) {
+            appointments = appointmentService.getAllAppointments();
+        } else if (doctor.isReceptionist()) {
+            List<StaffBranchMapping> branchMappings = doctorBranchMappingService.getDoctorBranches(requesterId);
+            appointments = new ArrayList<>();
+            for (StaffBranchMapping mapping : branchMappings) {
+                appointments.addAll(appointmentService.getAppointmentsByBranch(mapping.getBranchId()));
+            }
+        } else {
+            throw new SecurityException("Access denied");
+        }
+
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @QueryMapping
+    public List<AppointmentResponseDTO> appointmentsByDateRange(@Argument String requesterId, @Argument String startDate,
+                                                                @Argument String endDate) {
+        LocalDateTime start = parseDateTime(startDate);
+        LocalDateTime end = parseDateTime(endDate);
+
+        if (!hasFullAppointmentAccess(requesterId)) {
+            throw new SecurityException("Access denied: Only admin and customer care can view all appointments");
+        }
+
+        List<Appointment> appointments = appointmentService.getAppointmentsByDateRange(start, end);
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @QueryMapping
+    public List<AppointmentResponseDTO> appointmentsByStatus(@Argument String status, @Argument String requesterId) {
+        List<Appointment> appointments;
+
+        if (hasFullAppointmentAccess(requesterId)) {
+            appointments = appointmentService.getAppointmentsByStatus(status);
+        } else {
+            appointments = appointmentService.getAppointmentsByDoctor(requesterId)
+                    .stream()
+                    .filter(apt -> status.equals(apt.getStatus()))
+                    .toList();
+        }
 
         return appointments.stream()
                 .map(dtoMapper::toAppointmentResponseDTO)
@@ -57,7 +119,7 @@ public class AppointmentResolver {
 
     @QueryMapping
     public List<AppointmentResponseDTO> appointmentsByDoctor(@Argument String doctorId) {
-        Optional<Doctor> doctor = doctorService.getDoctorById(doctorId);
+        Optional<HospitalStaff> doctor = doctorService.getDoctorById(doctorId);
 
         if (doctor.isEmpty()) {
             throw new IllegalArgumentException("Doctor not found with ID: " + doctorId);
@@ -102,26 +164,9 @@ public class AppointmentResolver {
     }
 
     @QueryMapping
-    public List<AppointmentResponseDTO> appointmentsByDateRange(@Argument String adminId, @Argument String startDate,
-            @Argument String endDate) {
-        LocalDateTime start = parseDateTime(startDate);
-        LocalDateTime end = parseDateTime(endDate);
-
-        if (!ADMIN_IDS.contains(adminId)) {
-            throw new SecurityException("Access denied: Only admin can view all appointments");
-        }
-
-        List<Appointment> appointments = appointmentService.getAppointmentsByDateRange(start, end);
-
-        return appointments.stream()
-                .map(dtoMapper::toAppointmentResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @QueryMapping
     public List<AppointmentResponseDTO> appointmentsByDoctorAndDateRange(@Argument String doctorId,
             @Argument String startDate, @Argument String endDate) {
-        Optional<Doctor> doctor = doctorService.getDoctorById(doctorId);
+        Optional<HospitalStaff> doctor = doctorService.getDoctorById(doctorId);
         LocalDateTime start = parseDateTime(startDate);
         LocalDateTime end = parseDateTime(endDate);
 
@@ -155,28 +200,10 @@ public class AppointmentResolver {
     }
 
     @QueryMapping
-    public List<AppointmentResponseDTO> appointmentsByStatus(@Argument String status, @Argument String requesterId) {
-        List<Appointment> appointments;
-
-        if (ADMIN_IDS.contains(requesterId)) {
-            appointments = appointmentService.getAppointmentsByStatus(status);
-        } else {
-            appointments = appointmentService.getAppointmentsByDoctor(requesterId)
-                    .stream()
-                    .filter(apt -> status.equals(apt.getStatus()))
-                    .toList();
-        }
-
-        return appointments.stream()
-                .map(dtoMapper::toAppointmentResponseDTO)
-                .collect(Collectors.toList());
-    }
-
-    @QueryMapping
     public List<AppointmentResponseDTO> checkCollision(@Argument String doctorId, @Argument String patientId,
             @Argument String startTime, @Argument String endTime) {
 
-        Optional<Doctor> doctor = doctorService.getDoctorById(doctorId);
+        Optional<HospitalStaff> doctor = doctorService.getDoctorById(doctorId);
         Optional<Patient> patient = patientService.getPatientById(patientId);
 
         if (doctor.isEmpty()) {
@@ -196,7 +223,7 @@ public class AppointmentResolver {
 
     @MutationMapping
     public AppointmentResponseDTO createAppointment(@Valid @Argument AppointmentInputDTO input) {
-        Optional<Doctor> doctor = doctorService.getDoctorById(input.getDoctorId());
+        Optional<HospitalStaff> doctor = doctorService.getDoctorById(input.getDoctorId());
         if (doctor.isEmpty()) {
             throw new IllegalArgumentException("Doctor not found with ID: " + input.getDoctorId());
         }
@@ -305,6 +332,33 @@ public class AppointmentResolver {
 
         appointmentService.deleteMultipleAppointments(ids);
         return true;
+    }
+
+
+    private boolean hasBranchAccess(String userId, String branchId) {
+        Optional<HospitalStaff> user = doctorService.getDoctorById(userId);
+        if (user.isPresent()) {
+            HospitalStaff doctor = user.get();
+            if (doctor.isAdmin() || doctor.isCustomerCare()) {
+                return true;
+            }
+            if (doctor.isReceptionist()) {
+                return doctorBranchMappingService.isDoctorAssignedToBranch(userId, branchId);
+            }
+        }
+        return false;
+    }
+
+    @QueryMapping
+    public List<AppointmentResponseDTO> appointmentsByBranch(@Argument String branchId, @Argument String requesterId) {
+        if (!hasBranchAccess(requesterId, branchId)) {
+            throw new SecurityException("Access denied: You don't have access to this branch");
+        }
+
+        List<Appointment> appointments = appointmentService.getAppointmentsByBranch(branchId);
+        return appointments.stream()
+                .map(dtoMapper::toAppointmentResponseDTO)
+                .collect(Collectors.toList());
     }
 
     private LocalDateTime parseDateTime(String dateTimeStr) {

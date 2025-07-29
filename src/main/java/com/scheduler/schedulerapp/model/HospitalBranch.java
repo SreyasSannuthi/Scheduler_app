@@ -23,7 +23,7 @@ public class HospitalBranch {
     private String zipCode;
     private String email;
     private String phoneNumber;
-    private Boolean isActive = true;
     private LocalDateTime startedAt;
-
+    private String closedAt;
+    private Boolean isActive = true;
 }

@@ -1,8 +1,11 @@
 package com.scheduler.schedulerapp.resolver;
 
 import com.scheduler.schedulerapp.dto.DoctorResponseDTO;
+import com.scheduler.schedulerapp.dto.DoctorUpdateInputDTO;
 import com.scheduler.schedulerapp.mapper.DTOMapper;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.service.doctor.DoctorService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.MutationMapping;
 import org.springframework.graphql.data.method.annotation.QueryMapping;
@@ -50,5 +53,38 @@ public class DoctorResolver {
         } catch (Exception e) {
             throw new RuntimeException("Failed to delete doctor: " + e.getMessage());
         }
+    }
+
+    @MutationMapping
+    public DoctorResponseDTO updateDoctor(@Argument String id, @Valid @Argument DoctorUpdateInputDTO input) {
+        try {
+            HospitalStaff existingDoctor = doctorService.getDoctorById(id)
+                    .orElseThrow(() -> new RuntimeException("Doctor not found with ID: " + id));
+
+            if (input.getName() != null) {
+                existingDoctor.setName(input.getName().trim());
+            }
+            if (input.getEmail() != null) {
+                existingDoctor.setEmail(input.getEmail().toLowerCase().trim());
+            }
+            if (input.getRole() != null) {
+                existingDoctor.setRole(input.getRole());
+            }
+            if (input.getIsActive() != null) {
+                existingDoctor.setIsActive(input.getIsActive());
+            }
+
+            HospitalStaff updatedDoctor = doctorService.updateDoctor(id, existingDoctor);
+            return dtoMapper.toDoctorResponseDTO(updatedDoctor);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update doctor: " + e.getMessage());
+        }
+    }
+
+    @QueryMapping
+    public List<DoctorResponseDTO> customerCareStaff() {
+        return doctorService.getDoctorsByRole("customer_care").stream()
+                .map(dtoMapper::toDoctorResponseDTO)
+                .collect(Collectors.toList());
     }
 }

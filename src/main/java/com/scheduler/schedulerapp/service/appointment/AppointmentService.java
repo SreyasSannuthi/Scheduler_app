@@ -22,4 +22,7 @@ public interface AppointmentService {
     List<Appointment> getAppointmentsByStatus(String status);
 
     List<Appointment> checkCollision(String doctorId,String patientId,LocalDateTime startTime, LocalDateTime endTime);
+
+    List<Appointment> getAppointmentsByBranch(String branchId);
+    List<Appointment> getAppointmentsByBranchAndDateRange(String branchId, LocalDateTime start, LocalDateTime end);
 }

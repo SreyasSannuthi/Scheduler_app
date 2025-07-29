@@ -3,10 +3,12 @@ package com.scheduler.schedulerapp.resolver;
 import com.scheduler.schedulerapp.dto.DoctorSignupInputDTO;
 import com.scheduler.schedulerapp.dto.PatientSignupInputDTO;
 import com.scheduler.schedulerapp.dto.SignupResponseDTO;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.model.Patient;
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.PatientRepository;
+import com.scheduler.schedulerapp.service.doctor.DoctorService;
+import com.scheduler.schedulerapp.service.patient.PatientService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.graphql.data.method.annotation.Argument;
@@ -24,30 +26,33 @@ public class SignupResolver {
     private PatientRepository patientRepository;
 
     @Autowired
+    private DoctorService doctorService;
+
+    @Autowired
+    private PatientService patientService;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     @MutationMapping
     public SignupResponseDTO signupDoctor(@Valid @Argument("input") DoctorSignupInputDTO input) {
         try {
-            // Validate password confirmation
             if (!input.getPassword().equals(input.getConfirmPassword())) {
                 return new SignupResponseDTO("Passwords do not match", false, null, null, null);
             }
 
-            // Check if email already exists
             if (doctorRepository.findByEmail(input.getEmail()).isPresent() ||
                     patientRepository.findByEmail(input.getEmail()).isPresent()) {
                 return new SignupResponseDTO("Email already registered", false, null, null, null);
             }
 
-            // Create new doctor
-            Doctor doctor = new Doctor();
+            HospitalStaff doctor = new HospitalStaff();
             doctor.setName(input.getName().trim());
             doctor.setEmail(input.getEmail().toLowerCase().trim());
             doctor.setPassword(passwordEncoder.encode(input.getPassword()));
             doctor.setRole("doctor");
 
-            Doctor savedDoctor = doctorRepository.save(doctor);
+            HospitalStaff savedDoctor = doctorService.createDoctor(doctor);
 
             return new SignupResponseDTO(
                     "Doctor registered successfully! Please log in.",
@@ -67,18 +72,15 @@ public class SignupResolver {
     @MutationMapping
     public SignupResponseDTO signupPatient(@Valid @Argument("input") PatientSignupInputDTO input) {
         try {
-            // Validate password confirmation
             if (!input.getPassword().equals(input.getConfirmPassword())) {
                 return new SignupResponseDTO("Passwords do not match", false, null, null, null);
             }
 
-            // Check if email already exists
             if (doctorRepository.findByEmail(input.getEmail()).isPresent() ||
                     patientRepository.findByEmail(input.getEmail()).isPresent()) {
                 return new SignupResponseDTO("Email already registered", false, null, null, null);
             }
 
-            // Create new patient
             Patient patient = new Patient();
             patient.setName(input.getName().trim());
             patient.setEmail(input.getEmail().toLowerCase().trim());
@@ -87,7 +89,7 @@ public class SignupResolver {
             patient.setAge(input.getAge());
             patient.setRole("patient");
 
-            Patient savedPatient = patientRepository.save(patient);
+            Patient savedPatient = patientService.createPatient(patient);
 
             return new SignupResponseDTO(
                     "Patient registered successfully! Please log in.",

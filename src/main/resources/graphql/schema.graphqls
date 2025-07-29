@@ -5,7 +5,7 @@ type Doctor {
     role: String!
     startDate: String
     endDate: String
-    isActive: String
+    isActive: Boolean
 }
 
 type Patient {
@@ -98,6 +98,13 @@ input DoctorSignupInput {
     confirmPassword: String!
 }
 
+input DoctorUpdateInput {
+    name: String
+    email: String
+    role: String
+    isActive: Boolean
+}
+
 input PatientSignupInput {
     name: String!
     email: String!
@@ -147,12 +154,12 @@ type Query {
     patient(id: ID!): Patient
     patientsByRole(role: String!): [Patient!]!
 
-    appointments(adminId: ID!): [Appointment!]!
+    appointments(requesterId: ID!): [Appointment!]!
     appointmentsByDoctor(doctorId: ID!): [Appointment!]!
     appointmentsByPatient(patientId: ID!): [Appointment!]!
     appointmentById(id: ID!, requesterId: ID!): Appointment
 
-    appointmentsByDateRange(adminId: ID!, startDate: String!, endDate: String!): [Appointment!]!
+    appointmentsByDateRange(requesterId: ID!, startDate: String!, endDate: String!): [Appointment!]!
     appointmentsByDoctorAndDateRange(doctorId: ID!, startDate: String!, endDate: String!): [Appointment!]!
     appointmentsByPatientAndDateRange(patientId: ID!, startDate: String!, endDate: String!): [Appointment!]!
 
@@ -166,6 +173,12 @@ type Query {
     doctorBranchMappings: [DoctorBranchMapping!]!
     doctorBranches(doctorId: ID!): [DoctorBranchMapping!]!
     branchDoctors(branchId: ID!): [DoctorBranchMapping!]!
+
+    appointmentsByBranch(branchId: ID!, requesterId: ID!): [Appointment!]!
+    appointmentsByBranchAndDateRange(branchId: ID!, requesterId: ID!, startDate: String!, endDate: String!): [Appointment!]!
+    appointmentsByBranchAndStatus(branchId: ID!, status: String!, requesterId: ID!): [Appointment!]!
+
+    receptionistsByBranch(branchId: ID!): [Doctor!]!
 }
 
 type Mutation {
@@ -176,6 +189,8 @@ type Mutation {
     signupPatient(input: PatientSignupInput!): SignupResponse!
 
     deleteDoctor(id: ID!): Boolean!
+    updateDoctor(id: ID!, input: DoctorUpdateInput!): Doctor!
+
     deletePatient(id: ID!): Boolean!
 
     createAppointment(input: AppointmentInput!): Appointment!

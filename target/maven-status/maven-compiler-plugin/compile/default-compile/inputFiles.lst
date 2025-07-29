@@ -10,6 +10,7 @@
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/DoctorBranchMappingResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/DoctorResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/DoctorSignupInputDTO.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/DoctorUpdateInputDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/HospitalBranchInputDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/HospitalBranchResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/HospitalBranchUpdateInputDTO.java
@@ -18,10 +19,11 @@
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/SignupResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/mapper/DTOMapper.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/Appointment.java
-/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/Doctor.java
-/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/DoctorBranchMapping.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/HospitalBranch.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/HospitalStaff.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/Patient.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/StaffBranchMapping.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/UserRole.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/repository/AppointmentRepository.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/repository/DoctorBranchMappingRepository.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/repository/DoctorRepository.java

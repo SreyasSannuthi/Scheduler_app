@@ -1,6 +1,6 @@
 package com.scheduler.schedulerapp.repository;
 
-import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DoctorBranchMappingRepository extends MongoRepository<DoctorBranchMapping, String> {
-    List<DoctorBranchMapping> findByDoctorId(String doctorId);
-    List<DoctorBranchMapping> findByBranchId(String branchId);
-    Optional<DoctorBranchMapping> findByDoctorIdAndBranchId(String doctorId, String branchId);
+public interface DoctorBranchMappingRepository extends MongoRepository<StaffBranchMapping, String> {
+    List<StaffBranchMapping> findByDoctorId(String doctorId);
+    List<StaffBranchMapping> findByBranchId(String branchId);
+    Optional<StaffBranchMapping> findByDoctorIdAndBranchId(String doctorId, String branchId);
     void deleteByDoctorIdAndBranchId(String doctorId, String branchId);
 }

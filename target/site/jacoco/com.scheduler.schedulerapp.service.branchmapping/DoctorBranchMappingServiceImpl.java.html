@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DoctorBranchMappingServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">schedulerapp</a> &gt; <a href="index.source.html" class="el_package">com.scheduler.schedulerapp.service.branchmapping</a> &gt; <span class="el_source">DoctorBranchMappingServiceImpl.java</span></div><h1>DoctorBranchMappingServiceImpl.java</h1><pre class="source lang-java linenums">package com.scheduler.schedulerapp.service.branchmapping;
+
+import com.scheduler.schedulerapp.dto.DoctorBranchMappingInputDTO;
+import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
+import com.scheduler.schedulerapp.repository.DoctorRepository;
+import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+
+@Service
+<span class="fc" id="L15">public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingService {</span>
+
+    @Autowired
+    private DoctorBranchMappingRepository mappingRepository;
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    private HospitalBranchRepository hospitalBranchRepository;
+
+    @Override
+    public DoctorBranchMapping assignDoctorToBranch(DoctorBranchMappingInputDTO input) {
+
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (!doctorRepository.existsById(input.getDoctorId())) {</span>
+<span class="nc" id="L30">            throw new RuntimeException(&quot;Doctor not found with ID: &quot; + input.getDoctorId());</span>
+        }
+
+<span class="nc bnc" id="L33" title="All 2 branches missed.">        if (!hospitalBranchRepository.existsById(input.getBranchId())) {</span>
+<span class="nc" id="L34">            throw new RuntimeException(&quot;Branch not found with ID: &quot; + input.getBranchId());</span>
+        }
+
+<span class="nc" id="L37">        Optional&lt;DoctorBranchMapping&gt; existingMapping = mappingRepository</span>
+<span class="nc" id="L38">                .findByDoctorIdAndBranchId(input.getDoctorId(), input.getBranchId());</span>
+
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (existingMapping.isPresent()) {</span>
+<span class="nc" id="L41">            throw new RuntimeException(&quot;Doctor is already assigned to this branch&quot;);</span>
+        }
+
+<span class="nc" id="L44">        DoctorBranchMapping mapping = new DoctorBranchMapping();</span>
+<span class="nc" id="L45">        mapping.setDoctorId(input.getDoctorId());</span>
+<span class="nc" id="L46">        mapping.setBranchId(input.getBranchId());</span>
+<span class="nc" id="L47">        mapping.setDoctorName(input.getDoctorName());</span>
+<span class="nc" id="L48">        mapping.setBranchCode(input.getBranchCode());</span>
+
+<span class="nc" id="L50">        return mappingRepository.save(mapping);</span>
+    }
+
+    @Override
+    public List&lt;DoctorBranchMapping&gt; getDoctorBranches(String doctorId) {
+
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (!doctorRepository.existsById(doctorId)) {</span>
+<span class="nc" id="L57">            throw new RuntimeException(&quot;Doctor not found with ID: &quot; + doctorId);</span>
+        }
+
+<span class="nc" id="L60">        return mappingRepository.findByDoctorId(doctorId);</span>
+    }
+
+    @Override
+    public List&lt;DoctorBranchMapping&gt; getBranchDoctors(String branchId) {
+
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (!hospitalBranchRepository.existsById(branchId)) {</span>
+<span class="nc" id="L67">            throw new RuntimeException(&quot;Branch not found with ID: &quot; + branchId);</span>
+        }
+
+<span class="nc" id="L70">        return mappingRepository.findByBranchId(branchId);</span>
+    }
+
+    @Override
+    public void removeDoctorFromBranch(String doctorId, String branchId) {
+<span class="nc" id="L75">        Optional&lt;DoctorBranchMapping&gt; mapping = mappingRepository</span>
+<span class="nc" id="L76">                .findByDoctorIdAndBranchId(doctorId, branchId);</span>
+
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (mapping.isEmpty()) {</span>
+<span class="nc" id="L79">            throw new RuntimeException(&quot;Doctor is not assigned to this branch&quot;);</span>
+        }
+
+<span class="nc" id="L82">        mappingRepository.deleteByDoctorIdAndBranchId(doctorId, branchId);</span>
+<span class="nc" id="L83">    }</span>
+
+    @Override
+    public List&lt;DoctorBranchMapping&gt; getAllMappings() {
+<span class="nc" id="L87">        return mappingRepository.findAll();</span>
+    }
+
+    @Override
+    public boolean isDoctorAssignedToBranch(String doctorId, String branchId) {
+<span class="nc" id="L92">        Optional&lt;DoctorBranchMapping&gt; mapping = mappingRepository</span>
+<span class="nc" id="L93">                .findByDoctorIdAndBranchId(doctorId, branchId);</span>
+<span class="nc" id="L94">        return mapping.isPresent();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

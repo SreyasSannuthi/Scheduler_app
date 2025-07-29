@@ -16,7 +16,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
@@ -33,16 +32,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         String requestURI = request.getRequestURI();
-        String method = request.getMethod();
-
-        logger.debug("Processing request: {} {}", method, requestURI);
-
-        if (requestURI.equals("/graphql") && "POST".equals(method)) {
-            String contentType = request.getContentType();
-            if (contentType != null && contentType.contains("application/json")) {
-                logger.debug("GraphQL request detected, checking for JWT token");
-            }
-        }
+        logger.debug("Processing request: {} {}", request.getMethod(), requestURI);
 
         final String authorizationHeader = request.getHeader("Authorization");
         String username = null;

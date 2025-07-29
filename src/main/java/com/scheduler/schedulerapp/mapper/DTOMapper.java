@@ -7,10 +7,10 @@ import com.scheduler.schedulerapp.dto.DoctorBranchMappingResponseDTO;
 import com.scheduler.schedulerapp.dto.HospitalBranchResponseDTO;
 
 import com.scheduler.schedulerapp.model.Appointment;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.model.Patient;
 import com.scheduler.schedulerapp.model.HospitalBranch;
-import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
 
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.PatientRepository;
@@ -33,7 +33,7 @@ public class DTOMapper {
     @Autowired
     private PatientRepository patientRepository;
 
-    public DoctorResponseDTO toDoctorResponseDTO(Doctor doctor) {
+    public DoctorResponseDTO toDoctorResponseDTO(HospitalStaff doctor) {
         DoctorResponseDTO dto = new DoctorResponseDTO();
         dto.setId(doctor.getId());
         dto.setName(doctor.getName());
@@ -71,8 +71,8 @@ public class DTOMapper {
         dto.setUpdatedAt(appointment.getUpdatedAt().format(ISO_FORMATTER));
         dto.setDuration(calculateDuration(appointment));
 
-        Optional<Doctor> doctor = doctorRepository.findById(appointment.getDoctorId());
-        dto.setDoctorName(doctor.map(Doctor::getName).orElse("Unknown doctor"));
+        Optional<HospitalStaff> doctor = doctorRepository.findById(appointment.getDoctorId());
+        dto.setDoctorName(doctor.map(HospitalStaff::getName).orElse("Unknown doctor"));
 
         Optional<Patient> patient = patientRepository.findById(appointment.getPatientId());
         dto.setPatientName(patient.map(Patient::getName).orElse("Unknown patient"));
@@ -107,13 +107,14 @@ public class DTOMapper {
         dto.setZipCode(branch.getZipCode());
         dto.setEmail(branch.getEmail());
         dto.setPhoneNumber(branch.getPhoneNumber());
-        dto.setIsActive(branch.getIsActive());
         dto.setStartedAt(branch.getStartedAt() != null ? branch.getStartedAt().toString() : null);
+        dto.setClosedAt(branch.getClosedAt() != null ? branch.getClosedAt().toString() : null);
+        dto.setIsActive(branch.getIsActive());
         return dto;
     }
 
     public DoctorBranchMappingResponseDTO toDoctorBranchMappingResponseDTO(
-            DoctorBranchMapping mapping,
+            StaffBranchMapping mapping,
             String doctorName,
             String branchCode) {
 

@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataSeedingService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">schedulerapp</a> &gt; <a href="index.source.html" class="el_package">com.scheduler.schedulerapp.service.dataseeding</a> &gt; <span class="el_source">DataSeedingService.java</span></div><h1>DataSeedingService.java</h1><pre class="source lang-java linenums">package com.scheduler.schedulerapp.service.dataseeding;
+
+import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.Patient;
+import com.scheduler.schedulerapp.model.HospitalBranch;
+import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.repository.DoctorRepository;
+import com.scheduler.schedulerapp.repository.PatientRepository;
+import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
+import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.context.annotation.Profile;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+
+@Service
+@Profile(&quot;!test&quot;)
+<span class="nc" id="L25">public class DataSeedingService {</span>
+
+        @Autowired
+        private DoctorRepository doctorRepository;
+
+        @Autowired
+        private PatientRepository patientRepository;
+
+        @Autowired
+        private HospitalBranchRepository hospitalBranchRepository;
+
+        @Autowired
+        private DoctorBranchMappingRepository doctorBranchMappingRepository;
+
+        @Autowired
+        private PasswordEncoder passwordEncoder;
+
+        @EventListener(ApplicationReadyEvent.class)
+        public void seedData() {
+<span class="nc" id="L44">                seedHospitalBranches();</span>
+<span class="nc" id="L45">                seedDoctors();</span>
+<span class="nc" id="L46">                seedPatients();</span>
+<span class="nc" id="L47">                seedDoctorBranchMappings();</span>
+<span class="nc" id="L48">        }</span>
+
+        private void seedHospitalBranches() {
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                if (hospitalBranchRepository.count() == 0) {</span>
+<span class="nc" id="L52">                        List&lt;HospitalBranch&gt; branches = Arrays.asList(</span>
+<span class="nc" id="L53">                                        new HospitalBranch(null, &quot;CHN001&quot;, &quot;123 Anna Salai, T. Nagar&quot;, &quot;Chennai&quot;,</span>
+<span class="nc" id="L54">                                                        &quot;Tamil Nadu&quot;,</span>
+<span class="nc" id="L55">                                                        &quot;600017&quot;, &quot;chennai@hospital.com&quot;, &quot;044-12345678&quot;,</span>
+<span class="nc" id="L56">                                                        LocalDateTime.now(), &quot;&quot;, true),</span>
+
+<span class="nc" id="L58">                                        new HospitalBranch(null, &quot;BLR001&quot;, &quot;456 MG Road, Brigade Road&quot;, &quot;Bangalore&quot;,</span>
+<span class="nc" id="L59">                                                        &quot;Karnataka&quot;,</span>
+<span class="nc" id="L60">                                                        &quot;560001&quot;, &quot;bangalore@hospital.com&quot;, &quot;080-87654321&quot;,</span>
+<span class="nc" id="L61">                                                        LocalDateTime.now(), &quot;&quot;, true),</span>
+
+<span class="nc" id="L63">                                        new HospitalBranch(null, &quot;HYD001&quot;, &quot;789 Banjara Hills, Road No 12&quot;, &quot;Hyderabad&quot;,</span>
+<span class="nc" id="L64">                                                        &quot;Telangana&quot;,</span>
+<span class="nc" id="L65">                                                        &quot;500034&quot;, &quot;hyderabad@hospital.com&quot;, &quot;040-11223344&quot;,</span>
+<span class="nc" id="L66">                                                        LocalDateTime.now(), &quot;&quot;, true),</span>
+
+<span class="nc" id="L68">                                        new HospitalBranch(null, &quot;MUM001&quot;, &quot;321 Marine Drive, Nariman Point&quot;, &quot;Mumbai&quot;,</span>
+<span class="nc" id="L69">                                                        &quot;Maharashtra&quot;,</span>
+<span class="nc" id="L70">                                                        &quot;400021&quot;, &quot;mumbai@hospital.com&quot;, &quot;022-55667788&quot;,</span>
+<span class="nc" id="L71">                                                        LocalDateTime.now(), &quot;&quot;, true),</span>
+
+<span class="nc" id="L73">                                        new HospitalBranch(null, &quot;DEL001&quot;, &quot;654 Connaught Place, Central Delhi&quot;,</span>
+<span class="nc" id="L74">                                                        &quot;New Delhi&quot;, &quot;Delhi&quot;,</span>
+<span class="nc" id="L75">                                                        &quot;110001&quot;, &quot;delhi@hospital.com&quot;, &quot;011-99887766&quot;,</span>
+<span class="nc" id="L76">                                                        LocalDateTime.now(), &quot;&quot;, true));</span>
+
+<span class="nc" id="L78">                        hospitalBranchRepository.saveAll(branches);</span>
+<span class="nc" id="L79">                        System.out.println(branches.size() + &quot; hospital branches added successfully&quot;);</span>
+
+<span class="nc" id="L81">                        branches.forEach(branch -&gt; System.out</span>
+<span class="nc" id="L82">                                        .println(branch.getBranchCode() + &quot; - &quot; + branch.getCity() + &quot; Branch - &quot;</span>
+<span class="nc" id="L83">                                                        + branch.getPhoneNumber()));</span>
+<span class="nc" id="L84">                } else {</span>
+<span class="nc" id="L85">                        System.out.println(&quot;Hospital branches already exist&quot;);</span>
+                }
+<span class="nc" id="L87">        }</span>
+
+        private void seedDoctors() {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                if (doctorRepository.count() == 0) {</span>
+<span class="nc" id="L91">                        List&lt;Doctor&gt; doctors = Arrays.asList(</span>
+<span class="nc" id="L92">                                        new Doctor(null, &quot;Sreyas Sannuthi&quot;, &quot;admin@gmail.com&quot;, &quot;admin&quot;,</span>
+<span class="nc" id="L93">                                                        passwordEncoder.encode(&quot;admin123&quot;),</span>
+<span class="nc" id="L94">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L95">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L96">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L97">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L98">                                        new Doctor(null, &quot;Nithin Kumar&quot;, &quot;nithin@gmail.com&quot;, &quot;doctor&quot;,</span>
+<span class="nc" id="L99">                                                        passwordEncoder.encode(&quot;doctor123&quot;),</span>
+<span class="nc" id="L100">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L101">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L102">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L103">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L104">                                        new Doctor(null, &quot;Kuladeep Reddy&quot;, &quot;kuladeep@gmail.com&quot;, &quot;doctor&quot;,</span>
+<span class="nc" id="L105">                                                        passwordEncoder.encode(&quot;doctor123&quot;),</span>
+<span class="nc" id="L106">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L107">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L108">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L109">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L110">                                        new Doctor(null, &quot;Manish Reddy&quot;, &quot;manish@gmail.com&quot;, &quot;doctor&quot;,</span>
+<span class="nc" id="L111">                                                        passwordEncoder.encode(&quot;doctor123&quot;),</span>
+<span class="nc" id="L112">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L113">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L114">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L115">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L116">                                        new Doctor(null, &quot;Nikhil Sai&quot;, &quot;nikhil@gmail.com&quot;, &quot;doctor&quot;,</span>
+<span class="nc" id="L117">                                                        passwordEncoder.encode(&quot;doctor123&quot;),</span>
+<span class="nc" id="L118">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L119">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L120">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L121">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L122">                                        new Doctor(null, &quot;Rajesh Sharma&quot;, &quot;rajesh@gmail.com&quot;, &quot;doctor&quot;,</span>
+<span class="nc" id="L123">                                                        passwordEncoder.encode(&quot;doctor123&quot;),</span>
+<span class="nc" id="L124">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L125">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L126">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L127">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L128">                                        new Doctor(null, &quot;Priya Patel&quot;, &quot;priya@gmail.com&quot;, &quot;doctor&quot;,</span>
+<span class="nc" id="L129">                                                        passwordEncoder.encode(&quot;doctor123&quot;),</span>
+<span class="nc" id="L130">                                                        LocalDateTime.now()</span>
+<span class="nc" id="L131">                                                                        .format(DateTimeFormatter.ofPattern(</span>
+<span class="nc" id="L132">                                                                                        &quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L133">                                                        &quot;&quot;, true),</span>
+<span class="nc" id="L134">                                        new Doctor(null, &quot;Sarah Support&quot;, &quot;support1@gmail.com&quot;, &quot;customer_care&quot;,</span>
+<span class="nc" id="L135">                                                         passwordEncoder.encode(&quot;support123&quot;),</span>
+<span class="nc" id="L136">                                                         LocalDateTime.now().</span>
+<span class="nc" id="L137">                                                                 format(DateTimeFormatter.ofPattern(&quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L138">                                                        &quot;&quot;, true),</span>
+
+<span class="nc" id="L140">                                        new Doctor(null, &quot;Mike Care&quot;, &quot;support2@gmail.com&quot;, &quot;customer_care&quot;,</span>
+<span class="nc" id="L141">                                                        passwordEncoder.encode(&quot;support123&quot;),</span>
+<span class="nc" id="L142">                                                        LocalDateTime.now().</span>
+<span class="nc" id="L143">                                                                format(DateTimeFormatter.ofPattern(&quot;MMMM dd yyyy '-' h:mm a&quot;)),</span>
+<span class="nc" id="L144">                                                        &quot;&quot;, true)</span>
+                        );
+
+<span class="nc" id="L147">                        doctorRepository.saveAll(doctors);</span>
+<span class="nc" id="L148">                        System.out.println(doctors.size() + &quot; doctors added successfully&quot;);</span>
+
+<span class="nc" id="L150">                        doctors.forEach(doctor -&gt; System.out</span>
+<span class="nc" id="L151">                                        .println(doctor.getName() + &quot; (&quot; + doctor.getRole() + &quot;) - &quot;</span>
+<span class="nc" id="L152">                                                        + doctor.getEmail()));</span>
+<span class="nc" id="L153">                } else {</span>
+<span class="nc" id="L154">                        System.out.println(&quot;Doctors already exist&quot;);</span>
+                }
+<span class="nc" id="L156">        }</span>
+
+        private void seedPatients() {
+<span class="nc bnc" id="L159" title="All 2 branches missed.">                if (patientRepository.count() == 0) {</span>
+<span class="nc" id="L160">                        List&lt;Patient&gt; patients = Arrays.asList(</span>
+<span class="nc" id="L161">                                        new Patient(null, &quot;Vibhor Gupta&quot;, &quot;vibhor@gmail.com&quot;, &quot;9876543210&quot;, 27,</span>
+<span class="nc" id="L162">                                                        &quot;patient&quot;,</span>
+<span class="nc" id="L163">                                                        passwordEncoder.encode(&quot;patient123&quot;)),</span>
+<span class="nc" id="L164">                                        new Patient(null, &quot;Arnav Saharan&quot;, &quot;arnav@gmail.com&quot;, &quot;9123456780&quot;, 30,</span>
+<span class="nc" id="L165">                                                        &quot;patient&quot;,</span>
+<span class="nc" id="L166">                                                        passwordEncoder.encode(&quot;patient123&quot;)),</span>
+<span class="nc" id="L167">                                        new Patient(null, &quot;Mayank Pal&quot;, &quot;mayank@gmail.com&quot;, &quot;9012345678&quot;, 26, &quot;patient&quot;,</span>
+<span class="nc" id="L168">                                                        passwordEncoder.encode(&quot;patient123&quot;)),</span>
+<span class="nc" id="L169">                                        new Patient(null, &quot;Shubradip Saha&quot;, &quot;shubradip@gmail.com&quot;, &quot;7890123456&quot;, 24,</span>
+<span class="nc" id="L170">                                                        &quot;patient&quot;,</span>
+<span class="nc" id="L171">                                                        passwordEncoder.encode(&quot;patient123&quot;)),</span>
+<span class="nc" id="L172">                                        new Patient(null, &quot;Prateek Jain&quot;, &quot;prateek@gmail.com&quot;, &quot;8001234567&quot;, 28,</span>
+<span class="nc" id="L173">                                                        &quot;patient&quot;,</span>
+<span class="nc" id="L174">                                                        passwordEncoder.encode(&quot;patient123&quot;)),</span>
+<span class="nc" id="L175">                                        new Patient(null, &quot;Ankit Verma&quot;, &quot;ankit@gmail.com&quot;, &quot;9988776655&quot;, 32, &quot;patient&quot;,</span>
+<span class="nc" id="L176">                                                        passwordEncoder.encode(&quot;patient123&quot;)));</span>
+
+<span class="nc" id="L178">                        patientRepository.saveAll(patients);</span>
+<span class="nc" id="L179">                        System.out.println(patients.size() + &quot; patients added successfully&quot;);</span>
+
+<span class="nc" id="L181">                        patients.forEach(patient -&gt; System.out</span>
+<span class="nc" id="L182">                                        .println(patient.getName() + &quot; (&quot; + patient.getRole() + &quot;) - &quot;</span>
+<span class="nc" id="L183">                                                        + patient.getEmail() +</span>
+<span class="nc" id="L184">                                                        &quot;, Mobile: &quot; + patient.getPhoneNumber() + &quot;, Age: &quot;</span>
+<span class="nc" id="L185">                                                        + patient.getAge()));</span>
+<span class="nc" id="L186">                } else {</span>
+<span class="nc" id="L187">                        System.out.println(&quot;Patients already exist&quot;);</span>
+                }
+<span class="nc" id="L189">        }</span>
+
+        private void seedDoctorBranchMappings() {
+<span class="nc bnc" id="L192" title="All 2 branches missed.">                if (doctorBranchMappingRepository.count() == 0) {</span>
+
+<span class="nc" id="L194">                        List&lt;Doctor&gt; allDoctors = doctorRepository.findAll();</span>
+<span class="nc" id="L195">                        List&lt;HospitalBranch&gt; allBranches = hospitalBranchRepository.findAll();</span>
+
+<span class="nc" id="L197">                        List&lt;DoctorBranchMapping&gt; mappings = Arrays.asList(</span>
+<span class="nc" id="L198">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L199">                                                        getDoctorIdByEmail(allDoctors, &quot;nithin@gmail.com&quot;),</span>
+<span class="nc" id="L200">                                                        getBranchIdByCode(allBranches, &quot;CHN001&quot;), &quot;Nithin Kumar&quot;,</span>
+<span class="nc" id="L201">                                                        &quot;CHN001&quot;),</span>
+<span class="nc" id="L202">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L203">                                                        getDoctorIdByEmail(allDoctors, &quot;nithin@gmail.com&quot;),</span>
+<span class="nc" id="L204">                                                        getBranchIdByCode(allBranches, &quot;BLR001&quot;), &quot;Nithin Kumar&quot;,</span>
+<span class="nc" id="L205">                                                        &quot;BLR001&quot;),</span>
+<span class="nc" id="L206">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L207">                                                        getDoctorIdByEmail(allDoctors, &quot;kuladeep@gmail.com&quot;),</span>
+<span class="nc" id="L208">                                                        getBranchIdByCode(allBranches, &quot;HYD001&quot;), &quot;Kuladeep Reddy&quot;,</span>
+<span class="nc" id="L209">                                                        &quot;HYD001&quot;),</span>
+<span class="nc" id="L210">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L211">                                                        getDoctorIdByEmail(allDoctors, &quot;kuladeep@gmail.com&quot;),</span>
+<span class="nc" id="L212">                                                        getBranchIdByCode(allBranches, &quot;MUM001&quot;), &quot;Kuladeep Reddy&quot;,</span>
+<span class="nc" id="L213">                                                        &quot;MUM001&quot;),</span>
+<span class="nc" id="L214">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L215">                                                        getDoctorIdByEmail(allDoctors, &quot;manish@gmail.com&quot;),</span>
+<span class="nc" id="L216">                                                        getBranchIdByCode(allBranches, &quot;DEL001&quot;), &quot;Manish Reddy&quot;,</span>
+<span class="nc" id="L217">                                                        &quot;DEL001&quot;),</span>
+<span class="nc" id="L218">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L219">                                                        getDoctorIdByEmail(allDoctors, &quot;nikhil@gmail.com&quot;),</span>
+<span class="nc" id="L220">                                                        getBranchIdByCode(allBranches, &quot;BLR001&quot;), &quot;Nikhil Sai&quot;,</span>
+<span class="nc" id="L221">                                                        &quot;BLR001&quot;),</span>
+<span class="nc" id="L222">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L223">                                                        getDoctorIdByEmail(allDoctors, &quot;rajesh@gmail.com&quot;),</span>
+<span class="nc" id="L224">                                                        getBranchIdByCode(allBranches, &quot;MUM001&quot;), &quot;Rajesh Sharma&quot;,</span>
+<span class="nc" id="L225">                                                        &quot;MUM001&quot;),</span>
+<span class="nc" id="L226">                                        new DoctorBranchMapping(null,</span>
+<span class="nc" id="L227">                                                        getDoctorIdByEmail(allDoctors, &quot;priya@gmail.com&quot;),</span>
+<span class="nc" id="L228">                                                        getBranchIdByCode(allBranches, &quot;CHN001&quot;), &quot;Priya Patel&quot;,</span>
+<span class="nc" id="L229">                                                        &quot;CHN001&quot;));</span>
+
+<span class="nc" id="L231">                        mappings = mappings.stream()</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">                                        .filter(mapping -&gt; mapping.getDoctorId() != null</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">                                                        &amp;&amp; mapping.getBranchId() != null)</span>
+<span class="nc" id="L234">                                        .toList();</span>
+
+<span class="nc" id="L236">                        doctorBranchMappingRepository.saveAll(mappings);</span>
+<span class="nc" id="L237">                        System.out.println(mappings.size() + &quot; doctor-branch mappings created successfully&quot;);</span>
+
+<span class="nc" id="L239">                        mappings.forEach(mapping -&gt; System.out.println(</span>
+<span class="nc" id="L240">                                        &quot;Mapping created: &quot; + mapping.getDoctorId() + &quot; -&gt; &quot; + mapping.getBranchId()));</span>
+<span class="nc" id="L241">                } else {</span>
+<span class="nc" id="L242">                        System.out.println(&quot;Doctor-branch mappings already exist&quot;);</span>
+                }
+<span class="nc" id="L244">        }</span>
+
+        private String getDoctorIdByEmail(List&lt;Doctor&gt; doctors, String email) {
+<span class="nc" id="L247">                return doctors.stream()</span>
+<span class="nc" id="L248">                                .filter(doctor -&gt; email.equals(doctor.getEmail()))</span>
+<span class="nc" id="L249">                                .map(Doctor::getId)</span>
+<span class="nc" id="L250">                                .findFirst()</span>
+<span class="nc" id="L251">                                .orElse(null);</span>
+        }
+
+        private String getBranchIdByCode(List&lt;HospitalBranch&gt; branches, String branchCode) {
+<span class="nc" id="L255">                return branches.stream()</span>
+<span class="nc" id="L256">                                .filter(branch -&gt; branchCode.equals(branch.getBranchCode()))</span>
+<span class="nc" id="L257">                                .map(HospitalBranch::getId)</span>
+<span class="nc" id="L258">                                .findFirst()</span>
+<span class="nc" id="L259">                                .orElse(null);</span>
+        }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DTOMapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">schedulerapp</a> &gt; <a href="index.source.html" class="el_package">com.scheduler.schedulerapp.mapper</a> &gt; <span class="el_source">DTOMapper.java</span></div><h1>DTOMapper.java</h1><pre class="source lang-java linenums">package com.scheduler.schedulerapp.mapper;
+
+import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
+import com.scheduler.schedulerapp.dto.DoctorResponseDTO;
+import com.scheduler.schedulerapp.dto.PatientResponseDTO;
+import com.scheduler.schedulerapp.dto.DoctorBranchMappingResponseDTO;
+import com.scheduler.schedulerapp.dto.HospitalBranchResponseDTO;
+
+import com.scheduler.schedulerapp.model.Appointment;
+import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.Patient;
+import com.scheduler.schedulerapp.model.HospitalBranch;
+import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+
+import com.scheduler.schedulerapp.repository.DoctorRepository;
+import com.scheduler.schedulerapp.repository.PatientRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.time.Duration;
+import java.time.format.DateTimeFormatter;
+import java.util.Optional;
+
+@Component
+<span class="fc" id="L26">public class DTOMapper {</span>
+
+<span class="fc" id="L28">    private static final DateTimeFormatter ISO_FORMATTER = DateTimeFormatter.ISO_LOCAL_DATE_TIME;</span>
+
+    @Autowired
+    private DoctorRepository doctorRepository;
+
+    @Autowired
+    private PatientRepository patientRepository;
+
+    public DoctorResponseDTO toDoctorResponseDTO(Doctor doctor) {
+<span class="nc" id="L37">        DoctorResponseDTO dto = new DoctorResponseDTO();</span>
+<span class="nc" id="L38">        dto.setId(doctor.getId());</span>
+<span class="nc" id="L39">        dto.setName(doctor.getName());</span>
+<span class="nc" id="L40">        dto.setEmail(doctor.getEmail());</span>
+<span class="nc" id="L41">        dto.setRole(doctor.getRole());</span>
+<span class="nc" id="L42">        dto.setStartDate(doctor.getStartDate());</span>
+<span class="nc" id="L43">        dto.setEndDate(doctor.getEndDate());</span>
+<span class="nc" id="L44">        dto.setIsActive(doctor.getIsActive());</span>
+<span class="nc" id="L45">        return dto;</span>
+    }
+
+    public PatientResponseDTO toPatientResponseDTO(Patient patient) {
+<span class="nc" id="L49">        PatientResponseDTO dto = new PatientResponseDTO();</span>
+<span class="nc" id="L50">        dto.setId(patient.getId());</span>
+<span class="nc" id="L51">        dto.setName(patient.getName());</span>
+<span class="nc" id="L52">        dto.setEmail(patient.getEmail());</span>
+<span class="nc" id="L53">        dto.setPhoneNumber(patient.getPhoneNumber());</span>
+<span class="nc" id="L54">        dto.setAge(patient.getAge());</span>
+<span class="nc" id="L55">        dto.setRole(patient.getRole());</span>
+<span class="nc" id="L56">        return dto;</span>
+    }
+
+    public AppointmentResponseDTO toAppointmentResponseDTO(Appointment appointment) {
+<span class="nc" id="L60">        AppointmentResponseDTO dto = new AppointmentResponseDTO();</span>
+<span class="nc" id="L61">        dto.setId(appointment.getId());</span>
+<span class="nc" id="L62">        dto.setTitle(appointment.getTitle());</span>
+<span class="nc" id="L63">        dto.setDescription(appointment.getDescription());</span>
+<span class="nc" id="L64">        dto.setDoctorId(appointment.getDoctorId());</span>
+<span class="nc" id="L65">        dto.setPatientId(appointment.getPatientId());</span>
+<span class="nc" id="L66">        dto.setStartTime(appointment.getStartTime().format(ISO_FORMATTER));</span>
+<span class="nc" id="L67">        dto.setEndTime(appointment.getEndTime().format(ISO_FORMATTER));</span>
+<span class="nc" id="L68">        dto.setStatus(appointment.getStatus());</span>
+<span class="nc" id="L69">        dto.setBranchId(appointment.getBranchId());</span>
+<span class="nc" id="L70">        dto.setCreatedAt(appointment.getCreatedAt().format(ISO_FORMATTER));</span>
+<span class="nc" id="L71">        dto.setUpdatedAt(appointment.getUpdatedAt().format(ISO_FORMATTER));</span>
+<span class="nc" id="L72">        dto.setDuration(calculateDuration(appointment));</span>
+
+<span class="nc" id="L74">        Optional&lt;Doctor&gt; doctor = doctorRepository.findById(appointment.getDoctorId());</span>
+<span class="nc" id="L75">        dto.setDoctorName(doctor.map(Doctor::getName).orElse(&quot;Unknown doctor&quot;));</span>
+
+<span class="nc" id="L77">        Optional&lt;Patient&gt; patient = patientRepository.findById(appointment.getPatientId());</span>
+<span class="nc" id="L78">        dto.setPatientName(patient.map(Patient::getName).orElse(&quot;Unknown patient&quot;));</span>
+
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (appointment.getBranchId() != null) {</span>
+<span class="nc" id="L81">            dto.setBranchLocation(&quot;Branch Location&quot;);</span>
+        }
+<span class="nc" id="L83">        return dto;</span>
+    }
+
+    private String calculateDuration(Appointment appointment) {
+<span class="nc" id="L87">        Duration duration = Duration.between(appointment.getStartTime(), appointment.getEndTime());</span>
+<span class="nc" id="L88">        long hours = duration.toHours();</span>
+<span class="nc" id="L89">        long minutes = duration.toMinutes() % 60;</span>
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (hours == 0) {</span>
+<span class="nc" id="L92">            return minutes + &quot; minutes&quot;;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        } else if (minutes == 0) {</span>
+<span class="nc" id="L94">            return hours + &quot; hours&quot;;</span>
+        } else {
+<span class="nc" id="L96">            return hours + &quot; hours &quot; + minutes + &quot; minutes&quot;;</span>
+        }
+    }
+
+    public HospitalBranchResponseDTO toHospitalBranchResponseDTO(HospitalBranch branch) {
+<span class="nc" id="L101">        HospitalBranchResponseDTO dto = new HospitalBranchResponseDTO();</span>
+<span class="nc" id="L102">        dto.setId(branch.getId());</span>
+<span class="nc" id="L103">        dto.setBranchCode(branch.getBranchCode());</span>
+<span class="nc" id="L104">        dto.setAddress(branch.getAddress());</span>
+<span class="nc" id="L105">        dto.setCity(branch.getCity());</span>
+<span class="nc" id="L106">        dto.setState(branch.getState());</span>
+<span class="nc" id="L107">        dto.setZipCode(branch.getZipCode());</span>
+<span class="nc" id="L108">        dto.setEmail(branch.getEmail());</span>
+<span class="nc" id="L109">        dto.setPhoneNumber(branch.getPhoneNumber());</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        dto.setStartedAt(branch.getStartedAt() != null ? branch.getStartedAt().toString() : null);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        dto.setClosedAt(branch.getClosedAt() != null ? branch.getClosedAt().toString() : null);</span>
+<span class="nc" id="L112">        dto.setIsActive(branch.getIsActive());</span>
+<span class="nc" id="L113">        return dto;</span>
+    }
+
+    public DoctorBranchMappingResponseDTO toDoctorBranchMappingResponseDTO(
+            DoctorBranchMapping mapping,
+            String doctorName,
+            String branchCode) {
+
+<span class="nc" id="L121">        DoctorBranchMappingResponseDTO dto = new DoctorBranchMappingResponseDTO();</span>
+<span class="nc" id="L122">        dto.setId(mapping.getId());</span>
+<span class="nc" id="L123">        dto.setDoctorId(mapping.getDoctorId());</span>
+<span class="nc" id="L124">        dto.setBranchId(mapping.getBranchId());</span>
+<span class="nc" id="L125">        dto.setDoctorName(doctorName);</span>
+<span class="nc" id="L126">        dto.setBranchCode(branchCode);</span>
+<span class="nc" id="L127">        return dto;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

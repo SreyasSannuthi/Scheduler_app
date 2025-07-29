@@ -1,6 +1,4 @@
 com/scheduler/schedulerapp/service/dataseeding/DataSeedingService.class
-com/scheduler/schedulerapp/model/Doctor.class
-com/scheduler/schedulerapp/model/DoctorBranchMapping.class
 com/scheduler/schedulerapp/repository/HospitalBranchRepository.class
 com/scheduler/schedulerapp/dto/HospitalBranchResponseDTO.class
 com/scheduler/schedulerapp/dto/PatientSignupInputDTO.class
@@ -36,8 +34,10 @@ com/scheduler/schedulerapp/service/doctor/DoctorService.class
 com/scheduler/schedulerapp/dto/AuthResponseDTO.class
 com/scheduler/schedulerapp/dto/SignupResponseDTO.class
 com/scheduler/schedulerapp/dto/HospitalBranchInputDTO.class
+com/scheduler/schedulerapp/model/UserRole.class
 com/scheduler/schedulerapp/resolver/DoctorResolver.class
 com/scheduler/schedulerapp/service/appointment/AppointmentService.class
+com/scheduler/schedulerapp/dto/DoctorUpdateInputDTO.class
 com/scheduler/schedulerapp/resolver/HospitalBranchResolver.class
 com/scheduler/schedulerapp/security/JwtUtil.class
 com/scheduler/schedulerapp/SchedulerappApplication.class

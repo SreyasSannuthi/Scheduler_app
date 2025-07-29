@@ -108,4 +108,12 @@ public class AppointmentServiceImpl implements AppointmentService {
     public List<Appointment> getAppointmentsByStatus(String status) {
         return appointmentRepository.findByStatus(status);
     }
+
+    public List<Appointment> getAppointmentsByBranch(String branchId) {
+        return appointmentRepository.findByBranchId(branchId);
+    }
+
+    public List<Appointment> getAppointmentsByBranchAndDateRange(String branchId, LocalDateTime start, LocalDateTime end) {
+        return appointmentRepository.findByBranchIdAndStartTimeBetween(branchId, start, end);
+    }
 }

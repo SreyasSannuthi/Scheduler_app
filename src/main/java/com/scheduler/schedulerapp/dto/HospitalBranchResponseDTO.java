@@ -16,6 +16,7 @@ public class HospitalBranchResponseDTO {
     private String zipCode;
     private String email;
     private String phoneNumber;
+    private String startedAt;
+    private String closedAt;
     private Boolean isActive;
-    private String startedAt; // Formatted date string
 }

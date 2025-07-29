@@ -1,7 +1,7 @@
 package com.scheduler.schedulerapp.service.branchmapping;
 
 import com.scheduler.schedulerapp.dto.DoctorBranchMappingInputDTO;
-import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
 import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
@@ -24,7 +24,7 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
     private HospitalBranchRepository hospitalBranchRepository;
 
     @Override
-    public DoctorBranchMapping assignDoctorToBranch(DoctorBranchMappingInputDTO input) {
+    public StaffBranchMapping assignDoctorToBranch(DoctorBranchMappingInputDTO input) {
 
         if (!doctorRepository.existsById(input.getDoctorId())) {
             throw new RuntimeException("Doctor not found with ID: " + input.getDoctorId());
@@ -34,14 +34,14 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
             throw new RuntimeException("Branch not found with ID: " + input.getBranchId());
         }
 
-        Optional<DoctorBranchMapping> existingMapping = mappingRepository
+        Optional<StaffBranchMapping> existingMapping = mappingRepository
                 .findByDoctorIdAndBranchId(input.getDoctorId(), input.getBranchId());
 
         if (existingMapping.isPresent()) {
             throw new RuntimeException("Doctor is already assigned to this branch");
         }
 
-        DoctorBranchMapping mapping = new DoctorBranchMapping();
+        StaffBranchMapping mapping = new StaffBranchMapping();
         mapping.setDoctorId(input.getDoctorId());
         mapping.setBranchId(input.getBranchId());
         mapping.setDoctorName(input.getDoctorName());
@@ -51,7 +51,7 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
     }
 
     @Override
-    public List<DoctorBranchMapping> getDoctorBranches(String doctorId) {
+    public List<StaffBranchMapping> getDoctorBranches(String doctorId) {
 
         if (!doctorRepository.existsById(doctorId)) {
             throw new RuntimeException("Doctor not found with ID: " + doctorId);
@@ -61,7 +61,7 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
     }
 
     @Override
-    public List<DoctorBranchMapping> getBranchDoctors(String branchId) {
+    public List<StaffBranchMapping> getBranchDoctors(String branchId) {
 
         if (!hospitalBranchRepository.existsById(branchId)) {
             throw new RuntimeException("Branch not found with ID: " + branchId);
@@ -72,7 +72,7 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
 
     @Override
     public void removeDoctorFromBranch(String doctorId, String branchId) {
-        Optional<DoctorBranchMapping> mapping = mappingRepository
+        Optional<StaffBranchMapping> mapping = mappingRepository
                 .findByDoctorIdAndBranchId(doctorId, branchId);
 
         if (mapping.isEmpty()) {
@@ -83,7 +83,14 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
     }
 
     @Override
-    public List<DoctorBranchMapping> getAllMappings() {
+    public List<StaffBranchMapping> getAllMappings() {
         return mappingRepository.findAll();
+    }
+
+    @Override
+    public boolean isDoctorAssignedToBranch(String doctorId, String branchId) {
+        Optional<StaffBranchMapping> mapping = mappingRepository
+                .findByDoctorIdAndBranchId(doctorId, branchId);
+        return mapping.isPresent();
     }
 }

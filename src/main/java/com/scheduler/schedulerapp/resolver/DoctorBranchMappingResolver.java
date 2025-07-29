@@ -3,8 +3,8 @@ package com.scheduler.schedulerapp.resolver;
 import com.scheduler.schedulerapp.dto.DoctorBranchMappingInputDTO;
 import com.scheduler.schedulerapp.dto.DoctorBranchMappingResponseDTO;
 import com.scheduler.schedulerapp.mapper.DTOMapper;
-import com.scheduler.schedulerapp.model.DoctorBranchMapping;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.model.HospitalBranch;
 import com.scheduler.schedulerapp.service.branchmapping.DoctorBranchMappingService;
 import com.scheduler.schedulerapp.service.hospitalbranch.HospitalBranchService;
@@ -59,7 +59,7 @@ public class DoctorBranchMappingResolver {
     public DoctorBranchMappingResponseDTO assignDoctorToBranch(
             @Valid @Argument("input") DoctorBranchMappingInputDTO input) {
         try {
-            DoctorBranchMapping mapping = mappingService.assignDoctorToBranch(input);
+            StaffBranchMapping mapping = mappingService.assignDoctorToBranch(input);
             return enrichMappingWithNames(mapping);
         } catch (Exception e) {
             throw new RuntimeException("Failed to assign doctor to branch: " + e.getMessage());
@@ -76,9 +76,9 @@ public class DoctorBranchMappingResolver {
         }
     }
 
-    private DoctorBranchMappingResponseDTO enrichMappingWithNames(DoctorBranchMapping mapping) {
+    private DoctorBranchMappingResponseDTO enrichMappingWithNames(StaffBranchMapping mapping) {
         String doctorName = doctorService.getDoctorById(mapping.getDoctorId())
-                .map(Doctor::getName)
+                .map(HospitalStaff::getName)
                 .orElse("Unknown Doctor");
 
         String branchCode = branchService.getBranchById(mapping.getBranchId())

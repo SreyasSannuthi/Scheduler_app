@@ -5,7 +5,7 @@ import com.scheduler.schedulerapp.dto.AppointmentUpdateInputDTO;
 import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
 import com.scheduler.schedulerapp.mapper.DTOMapper;
 import com.scheduler.schedulerapp.model.Appointment;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.model.Patient;
 import com.scheduler.schedulerapp.service.appointment.AppointmentService;
 import com.scheduler.schedulerapp.service.doctor.DoctorService;
@@ -47,7 +47,7 @@ class AppointmentResolverTest {
 
     private Appointment testAppointment;
     private AppointmentResponseDTO testResponseDTO;
-    private Doctor testDoctor;
+    private HospitalStaff testDoctor;
     private Patient testPatient;
     private String adminId;
     private String doctorId;
@@ -57,13 +57,13 @@ class AppointmentResolverTest {
 
     @BeforeEach
     void setUp() {
-        adminId = "687fe5c0d551f766fc569ff3";
+        adminId = "6887727cf3498c1806036f28";
         doctorId = "doctor123";
         patientId = "patient123";
         startTime = LocalDateTime.of(2025, 8, 15, 10, 0);
         endTime = LocalDateTime.of(2025, 8, 15, 11, 0);
 
-        testDoctor = new Doctor();
+        testDoctor = new HospitalStaff();
         testDoctor.setId(doctorId);
         testDoctor.setName("Test Doctor");
         testDoctor.setEmail("doctor@test.com");
@@ -116,6 +116,10 @@ class AppointmentResolverTest {
 
     @Test
     void appointments_AdminAccessWithValidAdminId_ReturnsAllAppointments() {
+        HospitalStaff adminDoctor = new HospitalStaff();
+        adminDoctor.setRole("admin");
+        when(doctorService.getDoctorById(adminId)).thenReturn(Optional.of(adminDoctor));
+
         List<Appointment> appointments = List.of(testAppointment);
         List<AppointmentResponseDTO> expectedDTOs = List.of(testResponseDTO);
         when(appointmentService.getAllAppointments()).thenReturn(appointments);
@@ -131,22 +135,26 @@ class AppointmentResolverTest {
     @Test
     void appointments_NonAdminAccess_ThrowsSecurityException() {
         String nonAdminId = "nonAdmin123";
+        HospitalStaff nonAdminDoctor = new HospitalStaff();
+        nonAdminDoctor.setRole("doctor");
+        when(doctorService.getDoctorById(nonAdminId)).thenReturn(Optional.of(nonAdminDoctor));
 
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> appointmentResolver.appointments(nonAdminId));
 
-        assertEquals("Access denied: Only admin can view all appointments", exception.getMessage());
+        assertEquals("Access denied", exception.getMessage());
         verify(appointmentService, never()).getAllAppointments();
     }
 
     @Test
     void appointments_InvalidAdminId_ThrowsSecurityException() {
         String invalidAdminId = "invalid123";
+        when(doctorService.getDoctorById(invalidAdminId)).thenReturn(Optional.empty());
 
         SecurityException exception = assertThrows(SecurityException.class,
                 () -> appointmentResolver.appointments(invalidAdminId));
 
-        assertEquals("Access denied: Only admin can view all appointments", exception.getMessage());
+        assertEquals("User not found", exception.getMessage());
         verify(appointmentService, never()).getAllAppointments();
     }
 
@@ -281,27 +289,34 @@ class AppointmentResolverTest {
 
     @Test
     void appointmentsByDateRange_AdminAccessWithValidDateRange_ReturnsAppointmentsInRange() {
+        HospitalStaff adminDoctor = new HospitalStaff();
+        adminDoctor.setRole("admin");
+        when(doctorService.getDoctorById(adminId)).thenReturn(Optional.of(adminDoctor));
+
         List<Appointment> appointments = List.of(testAppointment);
-        when(appointmentService.getAppointmentsByDateRange(any(LocalDateTime.class), any(LocalDateTime.class)))
-                .thenReturn(appointments);
+        when(appointmentService.getAppointmentsByDateRange(startTime, endTime)).thenReturn(appointments);
         when(dtoMapper.toAppointmentResponseDTO(testAppointment)).thenReturn(testResponseDTO);
 
-        List<AppointmentResponseDTO> result = appointmentResolver.appointmentsByDateRange(
-                adminId, "2025-01-15T00:00:00", "2025-01-15T23:59:59");
+        List<AppointmentResponseDTO> result = appointmentResolver.appointmentsByDateRange(adminId,
+                startTime.toString(), endTime.toString());
 
         assertEquals(1, result.size());
         assertEquals(testResponseDTO, result.get(0));
-        verify(appointmentService).getAppointmentsByDateRange(any(LocalDateTime.class), any(LocalDateTime.class));
+        verify(appointmentService).getAppointmentsByDateRange(startTime, endTime);
     }
 
     @Test
     void appointmentsByDateRange_NonAdminAccess_ThrowsSecurityException() {
         String nonAdminId = "nonAdmin123";
+        HospitalStaff nonAdminDoctor = new HospitalStaff();
+        nonAdminDoctor.setRole("doctor");
+        when(doctorService.getDoctorById(nonAdminId)).thenReturn(Optional.of(nonAdminDoctor));
 
-        SecurityException exception = assertThrows(SecurityException.class, () -> appointmentResolver
-                .appointmentsByDateRange(nonAdminId, "2025-01-15T00:00:00", "2025-01-15T23:59:59"));
+        SecurityException exception = assertThrows(SecurityException.class,
+                () -> appointmentResolver.appointmentsByDateRange(nonAdminId, "2024-01-01T00:00:00",
+                        "2024-01-02T00:00:00"));
 
-        assertEquals("Access denied: Only admin can view all appointments", exception.getMessage());
+        assertEquals("Access denied: Only admin and customer care can view all appointments", exception.getMessage());
         verify(appointmentService, never()).getAppointmentsByDateRange(any(), any());
     }
 
@@ -401,6 +416,10 @@ class AppointmentResolverTest {
 
     @Test
     void appointmentsByStatus_AdminAccessToAppointmentsByStatus_ReturnsAllMatchingAppointments() {
+        HospitalStaff adminDoctor = new HospitalStaff();
+        adminDoctor.setRole("admin");
+        when(doctorService.getDoctorById(adminId)).thenReturn(Optional.of(adminDoctor));
+
         List<Appointment> appointments = List.of(testAppointment);
         when(appointmentService.getAppointmentsByStatus("scheduled")).thenReturn(appointments);
         when(dtoMapper.toAppointmentResponseDTO(testAppointment)).thenReturn(testResponseDTO);

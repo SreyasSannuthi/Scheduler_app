@@ -16,10 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.model.Patient;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -43,8 +42,8 @@ class AuthServiceImplTest {
 
     private static final String PASSWORD = "secret";
 
-    private Doctor doctorUser(String email) {
-        return new Doctor("1", "Dr. John Doe", email, "doctor", "encPwd", "July 22 2025 5:51 PM", "", true);
+    private HospitalStaff doctorUser(String email) {
+        return new HospitalStaff("1", "Dr. John Doe", email, "doctor", "encPwd", "July 22 2025 5:51 PM", "", true);
     }
 
     private Patient patientUser(String email) {
@@ -59,7 +58,7 @@ class AuthServiceImplTest {
     @DisplayName("authenticate(): success for Doctor")
     void shouldAuthenticateDoctorSuccessfully() {
         String email = "doc@example.com";
-        Doctor doctor = doctorUser(email);
+        HospitalStaff doctor = doctorUser(email);
         AuthRequestDTO request = new AuthRequestDTO(email, PASSWORD);
 
         when(doctorRepository.findByEmail(email)).thenReturn(Optional.of(doctor));

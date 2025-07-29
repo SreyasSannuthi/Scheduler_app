@@ -1,14 +1,20 @@
 package com.scheduler.schedulerapp.service.branchmapping;
 
 import com.scheduler.schedulerapp.dto.DoctorBranchMappingInputDTO;
-import com.scheduler.schedulerapp.model.DoctorBranchMapping;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
 
 import java.util.List;
 
 public interface DoctorBranchMappingService {
-    DoctorBranchMapping assignDoctorToBranch(DoctorBranchMappingInputDTO input);
-    List<DoctorBranchMapping> getDoctorBranches(String doctorId);
-    List<DoctorBranchMapping> getBranchDoctors(String branchId);
+    StaffBranchMapping assignDoctorToBranch(DoctorBranchMappingInputDTO input);
+
+    List<StaffBranchMapping> getDoctorBranches(String doctorId);
+
+    List<StaffBranchMapping> getBranchDoctors(String branchId);
+
     void removeDoctorFromBranch(String doctorId, String branchId);
-    List<DoctorBranchMapping> getAllMappings();
+
+    List<StaffBranchMapping> getAllMappings();
+
+    boolean isDoctorAssignedToBranch(String doctorId, String branchId);
 }

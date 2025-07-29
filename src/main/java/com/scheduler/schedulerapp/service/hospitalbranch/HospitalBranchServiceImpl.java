@@ -3,9 +3,12 @@ package com.scheduler.schedulerapp.service.hospitalbranch;
 import com.scheduler.schedulerapp.dto.HospitalBranchInputDTO;
 import com.scheduler.schedulerapp.dto.HospitalBranchUpdateInputDTO;
 import com.scheduler.schedulerapp.model.HospitalBranch;
+import com.scheduler.schedulerapp.model.StaffBranchMapping;
 import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
+import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,9 +20,11 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
     @Autowired
     private HospitalBranchRepository hospitalBranchRepository;
 
+    @Autowired
+    private DoctorBranchMappingRepository doctorBranchMappingRepository;
+
     @Override
     public HospitalBranch createBranch(HospitalBranchInputDTO input) {
-        // Check if branch code already exists
         if (hospitalBranchRepository.existsByBranchCode(input.getBranchCode())) {
             throw new RuntimeException("Branch code already exists: " + input.getBranchCode());
         }
@@ -59,7 +64,6 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
                 .orElseThrow(() -> new RuntimeException("Branch not found with ID: " + id));
 
         if (input.getBranchCode() != null) {
-            // Check if new branch code conflicts with existing ones
             if (!input.getBranchCode().equals(existingBranch.getBranchCode()) &&
                     hospitalBranchRepository.existsByBranchCode(input.getBranchCode())) {
                 throw new RuntimeException("Branch code already exists: " + input.getBranchCode());
@@ -84,18 +88,53 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
         if (input.getPhoneNumber() != null) {
             existingBranch.setPhoneNumber(input.getPhoneNumber());
         }
-        if (input.getIsActive() != null) {
+
+        if (input.getIsActive() != null && !input.getIsActive().equals(existingBranch.getIsActive())) {
             existingBranch.setIsActive(input.getIsActive());
+
+            if (!input.getIsActive()) {
+                existingBranch.setClosedAt(LocalDateTime.now().toString());
+                removeDoctorMappingsForBranch(id);
+            } else {
+                existingBranch.setClosedAt("");
+            }
         }
 
         return hospitalBranchRepository.save(existingBranch);
     }
 
     @Override
+    @Transactional
     public void deleteBranch(String id) {
         if (!hospitalBranchRepository.existsById(id)) {
             throw new RuntimeException("Branch not found with ID: " + id);
         }
-        hospitalBranchRepository.deleteById(id);
+
+        Optional<HospitalBranch> branchCheck = hospitalBranchRepository.findById(id);
+        if (branchCheck.isPresent()) {
+            HospitalBranch branch = branchCheck.get();
+
+            branch.setIsActive(false);
+            branch.setClosedAt(LocalDateTime.now().toString());
+
+            removeDoctorMappingsForBranch(id);
+            hospitalBranchRepository.save(branch);
+
+            System.out.println("Branch " + branch.getBranchCode() + " has been deactivated and all doctor mappings removed");
+        }
+    }
+
+    private void removeDoctorMappingsForBranch(String branchId) {
+        try {
+            List<StaffBranchMapping> mappings = doctorBranchMappingRepository.findByBranchId(branchId);
+
+            if (!mappings.isEmpty()) {
+                doctorBranchMappingRepository.deleteAll(mappings);
+                System.out.println("Removed " + mappings.size() + " doctor mappings for branch ID: " + branchId);
+            }
+        } catch (Exception e) {
+            System.err.println("Error removing doctor mappings for branch " + branchId + ": " + e.getMessage());
+            throw new RuntimeException("Failed to remove doctor mappings for branch: " + e.getMessage());
+        }
     }
 }

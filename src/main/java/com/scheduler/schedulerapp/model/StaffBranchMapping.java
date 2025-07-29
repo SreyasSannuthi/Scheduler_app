@@ -7,12 +7,12 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.index.CompoundIndex;
 
-@Document(collection = "doctorBranchMappings")
+@Document(collection = "staffBranchMappings")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @CompoundIndex(def = "{'doctorId': 1, 'branchId': 1}", unique = true)
-public class DoctorBranchMapping {
+public class StaffBranchMapping {
 
     @Id
     private String id;

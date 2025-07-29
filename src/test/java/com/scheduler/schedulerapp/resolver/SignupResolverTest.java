@@ -3,7 +3,7 @@ package com.scheduler.schedulerapp.resolver;
 import com.scheduler.schedulerapp.dto.DoctorSignupInputDTO;
 import com.scheduler.schedulerapp.dto.PatientSignupInputDTO;
 import com.scheduler.schedulerapp.dto.SignupResponseDTO;
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 import com.scheduler.schedulerapp.model.Patient;
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.PatientRepository;
@@ -39,7 +39,7 @@ class SignupResolverTest {
 
     private DoctorSignupInputDTO doctorSignupInput;
     private PatientSignupInputDTO patientSignupInput;
-    private Doctor mockDoctor;
+    private HospitalStaff mockDoctor;
     private Patient mockPatient;
 
     private static final String TEST_EMAIL = "test@example.com";
@@ -69,7 +69,7 @@ class SignupResolverTest {
         patientSignupInput.setAge(TEST_AGE);
 
         // Setup mock entities
-        mockDoctor = new Doctor();
+        mockDoctor = new HospitalStaff();
         mockDoctor.setId(TEST_ID);
         mockDoctor.setName(TEST_NAME);
         mockDoctor.setEmail(TEST_EMAIL.toLowerCase());
@@ -94,7 +94,7 @@ class SignupResolverTest {
         when(doctorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(patientRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
-        when(doctorRepository.save(any(Doctor.class))).thenReturn(mockDoctor);
+        when(doctorRepository.save(any(HospitalStaff.class))).thenReturn(mockDoctor);
 
         // Act
         SignupResponseDTO response = signupResolver.signupDoctor(doctorSignupInput);
@@ -111,7 +111,7 @@ class SignupResolverTest {
         verify(doctorRepository).findByEmail(TEST_EMAIL.toLowerCase());
         verify(patientRepository).findByEmail(TEST_EMAIL.toLowerCase());
         verify(passwordEncoder).encode(TEST_PASSWORD);
-        verify(doctorRepository).save(any(Doctor.class));
+        verify(doctorRepository).save(any(HospitalStaff.class));
     }
 
     @Test
@@ -153,7 +153,7 @@ class SignupResolverTest {
         // Verify interactions
         verify(doctorRepository).findByEmail(TEST_EMAIL.toLowerCase());
         verifyNoInteractions(patientRepository, passwordEncoder);
-        verify(doctorRepository, never()).save(any(Doctor.class));
+        verify(doctorRepository, never()).save(any(HospitalStaff.class));
     }
 
     @Test
@@ -177,7 +177,7 @@ class SignupResolverTest {
         verify(doctorRepository).findByEmail(TEST_EMAIL.toLowerCase());
         verify(patientRepository).findByEmail(TEST_EMAIL.toLowerCase());
         verifyNoInteractions(passwordEncoder);
-        verify(doctorRepository, never()).save(any(Doctor.class));
+        verify(doctorRepository, never()).save(any(HospitalStaff.class));
     }
 
     @Test
@@ -186,7 +186,7 @@ class SignupResolverTest {
         when(doctorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(patientRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
-        when(doctorRepository.save(any(Doctor.class))).thenThrow(new RuntimeException("Database error"));
+        when(doctorRepository.save(any(HospitalStaff.class))).thenThrow(new RuntimeException("Database error"));
 
         // Act
         SignupResponseDTO response = signupResolver.signupDoctor(doctorSignupInput);
@@ -210,7 +210,7 @@ class SignupResolverTest {
         when(doctorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(patientRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
-        when(doctorRepository.save(any(Doctor.class))).thenReturn(mockDoctor);
+        when(doctorRepository.save(any(HospitalStaff.class))).thenReturn(mockDoctor);
 
         // Act
         SignupResponseDTO response = signupResolver.signupDoctor(doctorSignupInput);
@@ -397,7 +397,7 @@ class SignupResolverTest {
         when(doctorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(patientRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
-        when(doctorRepository.save(any(Doctor.class))).thenReturn(mockDoctor);
+        when(doctorRepository.save(any(HospitalStaff.class))).thenReturn(mockDoctor);
 
         // Act
         SignupResponseDTO response = signupResolver.signupDoctor(doctorSignupInput);
@@ -420,7 +420,7 @@ class SignupResolverTest {
         when(doctorRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(patientRepository.findByEmail(anyString())).thenReturn(Optional.empty());
         when(passwordEncoder.encode(TEST_PASSWORD)).thenReturn(TEST_ENCODED_PASSWORD);
-        when(doctorRepository.save(any(Doctor.class))).thenReturn(mockDoctor);
+        when(doctorRepository.save(any(HospitalStaff.class))).thenReturn(mockDoctor);
 
         // Act
         signupResolver.signupDoctor(doctorSignupInput);

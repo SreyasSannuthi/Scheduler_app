@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AppointmentInputDTO.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">schedulerapp</a> &gt; <a href="index.source.html" class="el_package">com.scheduler.schedulerapp.dto</a> &gt; <span class="el_source">AppointmentInputDTO.java</span></div><h1>AppointmentInputDTO.java</h1><pre class="source lang-java linenums">package com.scheduler.schedulerapp.dto;
+
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import lombok.Data;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
+
+@Data
+public class AppointmentInputDTO {
+
+    @NotBlank(message = &quot;Doctor ID is required&quot;)
+    private String doctorId;
+
+    @NotBlank(message = &quot;Doctor ID is required&quot;)
+    private String patientId;
+
+    @NotBlank(message = &quot;Title is required&quot;)
+    private String title;
+
+    private String description;
+
+    @NotBlank(message = &quot;Start time is required&quot;)
+    private String startTime;
+
+    @NotBlank(message = &quot;End time is required&quot;)
+    private String endTime;
+
+    @Pattern(regexp = &quot;scheduled|cancelled|completed&quot;, message = &quot;Invalid status&quot;)
+    private String status;
+
+    private String branchId;
+
+    @AssertTrue(message = &quot;End time must be after start time&quot;)
+    public boolean isValidTimeRange() {
+<span class="nc bnc" id="L39" title="All 4 branches missed.">        if (startTime == null || endTime == null) return true;</span>
+        try {
+<span class="nc" id="L41">            LocalDateTime start = LocalDateTime.parse(startTime);</span>
+<span class="nc" id="L42">            LocalDateTime end = LocalDateTime.parse(endTime);</span>
+<span class="nc" id="L43">            return end.isAfter(start);</span>
+<span class="nc" id="L44">        } catch (DateTimeParseException e) {</span>
+<span class="nc" id="L45">            return false;</span>
+        }
+    }
+
+    @AssertTrue(message = &quot;Appointment duration cannot exceed 4 hours&quot;)
+    public boolean isValidDuration() {
+<span class="nc bnc" id="L51" title="All 4 branches missed.">        if (startTime == null || endTime == null) return true;</span>
+        try {
+<span class="nc" id="L53">            LocalDateTime start = LocalDateTime.parse(startTime);</span>
+<span class="nc" id="L54">            LocalDateTime end = LocalDateTime.parse(endTime);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            return Duration.between(start, end).toHours() &lt;= 4;</span>
+<span class="nc" id="L56">        } catch (DateTimeParseException e) {</span>
+<span class="nc" id="L57">            return false;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

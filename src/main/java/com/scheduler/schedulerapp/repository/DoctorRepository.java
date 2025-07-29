@@ -1,6 +1,6 @@
 package com.scheduler.schedulerapp.repository;
 
-import com.scheduler.schedulerapp.model.Doctor;
+import com.scheduler.schedulerapp.model.HospitalStaff;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
@@ -10,11 +10,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface DoctorRepository extends MongoRepository <Doctor, String> {
+public interface DoctorRepository extends MongoRepository <HospitalStaff, String> {
 
     @Query("{'isActive' : true}")
-    List<Doctor> findAllWhoIsActive();
+    List<HospitalStaff> findAllWhoIsActive();
 
-    List<Doctor> findByRole(String role);
-    Optional<Doctor> findByEmail(String email);
+    List<HospitalStaff> findByRole(String role);
+    Optional<HospitalStaff> findByEmail(String email);
 }
