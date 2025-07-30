@@ -26,6 +26,14 @@ public class ActivityLog {
 
     private String actionType;
 
+    private String staffRole;
+
+    private String staffName;
+
+    private String branchCode;
+
+    private String branchLocation;
+
     private String description;
 
     private String performedBy;
@@ -35,11 +43,18 @@ public class ActivityLog {
     @Indexed
     private LocalDateTime timestamp;
 
-    private Map<String, Object> previousState;
-
-    private Map<String, Object> newState;
+    private Map<String, Object> state;
 
     private Map<String, String> relatedEntities;
 
     private String impactSummary;
+
+
+    public String getStateAsString() {
+        return state != null ? state.toString() : null;
+    }
+
+    public String getRelatedEntitiesAsString() {
+        return relatedEntities != null ? relatedEntities.toString() : null;
+    }
 }

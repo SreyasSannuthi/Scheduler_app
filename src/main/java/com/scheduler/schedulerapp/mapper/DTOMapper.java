@@ -1,16 +1,8 @@
 package com.scheduler.schedulerapp.mapper;
 
-import com.scheduler.schedulerapp.dto.AppointmentResponseDTO;
-import com.scheduler.schedulerapp.dto.DoctorResponseDTO;
-import com.scheduler.schedulerapp.dto.PatientResponseDTO;
-import com.scheduler.schedulerapp.dto.DoctorBranchMappingResponseDTO;
-import com.scheduler.schedulerapp.dto.HospitalBranchResponseDTO;
+import com.scheduler.schedulerapp.dto.*;
 
-import com.scheduler.schedulerapp.model.Appointment;
-import com.scheduler.schedulerapp.model.HospitalStaff;
-import com.scheduler.schedulerapp.model.Patient;
-import com.scheduler.schedulerapp.model.HospitalBranch;
-import com.scheduler.schedulerapp.model.StaffBranchMapping;
+import com.scheduler.schedulerapp.model.*;
 
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.PatientRepository;
@@ -124,6 +116,28 @@ public class DTOMapper {
         dto.setBranchId(mapping.getBranchId());
         dto.setDoctorName(doctorName);
         dto.setBranchCode(branchCode);
+        return dto;
+    }
+
+    public ActivityLogResponseDTO toActivityLogResponseDTO(ActivityLog activityLog) {
+        ActivityLogResponseDTO dto = new ActivityLogResponseDTO();
+        dto.setId(activityLog.getId());
+        dto.setEntityType(activityLog.getEntityType());
+        dto.setEntityId(activityLog.getEntityId());
+        dto.setActionType(activityLog.getActionType());
+        dto.setDescription(activityLog.getDescription());
+        dto.setPerformedBy(activityLog.getPerformedBy());
+        dto.setPerformedByName(activityLog.getPerformedByName());
+        dto.setTimestamp(activityLog.getTimestamp() != null ? activityLog.getTimestamp().toString() : null);
+
+        dto.setState(activityLog.getStateAsString());
+        dto.setRelatedEntities(activityLog.getRelatedEntitiesAsString());
+        dto.setImpactSummary(activityLog.getImpactSummary());
+
+        dto.setStaffRole(activityLog.getStaffRole());
+        dto.setStaffName(activityLog.getStaffName());
+        dto.setBranchCode(activityLog.getBranchCode());
+        dto.setBranchLocation(activityLog.getBranchLocation());
         return dto;
     }
 }

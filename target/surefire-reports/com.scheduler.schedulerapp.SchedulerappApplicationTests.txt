@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.scheduler.schedulerapp.SchedulerappApplicationTests
--------------------------------------------------------------------------------
-Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 4.559 s -- in com.scheduler.schedulerapp.SchedulerappApplicationTests

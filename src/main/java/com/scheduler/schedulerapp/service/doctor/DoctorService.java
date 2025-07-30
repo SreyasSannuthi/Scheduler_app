@@ -1,5 +1,6 @@
 package com.scheduler.schedulerapp.service.doctor;
 
+import com.scheduler.schedulerapp.model.ActivityLog;
 import com.scheduler.schedulerapp.model.HospitalStaff;
 import java.util.List;
 import java.util.Optional;

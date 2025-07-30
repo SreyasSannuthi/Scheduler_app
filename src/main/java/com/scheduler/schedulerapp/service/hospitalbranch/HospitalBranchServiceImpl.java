@@ -6,6 +6,8 @@ import com.scheduler.schedulerapp.model.HospitalBranch;
 import com.scheduler.schedulerapp.model.StaffBranchMapping;
 import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
 import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
+import com.scheduler.schedulerapp.service.activitylogservice.ActivityLogService;
+import com.scheduler.schedulerapp.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +24,12 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
 
     @Autowired
     private DoctorBranchMappingRepository doctorBranchMappingRepository;
+
+    @Autowired
+    private ActivityLogService activityLogService;
+
+    @Autowired
+    private AuthService authService;
 
     @Override
     public HospitalBranch createBranch(HospitalBranchInputDTO input) {
@@ -94,8 +102,26 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
 
             if (!input.getIsActive()) {
                 existingBranch.setClosedAt(LocalDateTime.now().toString());
+
+                String impactSummary = String.format("Branch closed with %d staff mappings removed",
+                        doctorBranchMappingRepository.countByBranchId(id));
+
+                activityLogService.logBranchDeactivation(
+                        id,
+                        existingBranch.getBranchCode(),
+                        authService.getCurrentUserId(),
+                        authService.getCurrentUserName(),
+                        impactSummary
+                );
+
                 removeDoctorMappingsForBranch(id);
             } else {
+                activityLogService.logBranchReactivation(
+                        id,
+                        existingBranch.getBranchCode(),
+                        authService.getCurrentUserId(),
+                        authService.getCurrentUserName()
+                );
                 existingBranch.setClosedAt("");
             }
         }
@@ -116,6 +142,17 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
 
             branch.setIsActive(false);
             branch.setClosedAt(LocalDateTime.now().toString());
+
+            String impactSummary = String.format("Branch closed with %d staff mappings removed",
+                    doctorBranchMappingRepository.countByBranchId(id));
+
+            activityLogService.logBranchDeactivation(
+                    id,
+                    branch.getBranchCode(),
+                    authService.getCurrentUserId(),
+                    authService.getCurrentUserName(),
+                    impactSummary
+            );
 
             removeDoctorMappingsForBranch(id);
             hospitalBranchRepository.save(branch);

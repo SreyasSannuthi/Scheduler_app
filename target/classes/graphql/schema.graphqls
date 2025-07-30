@@ -71,6 +71,25 @@ type SignupResponse {
     role: String
 }
 
+type ActivityLogResponseDTO {
+    id: ID
+    entityType: String
+    entityId: String
+    actionType: String
+    description: String
+    performedBy: String
+    performedByName: String
+    timestamp: String
+    state: String
+    relatedEntities: String
+    impactSummary: String
+    staffRole: String
+    staffName: String
+    branchCode: String
+    branchLocation: String
+}
+
+
 input AppointmentInput {
     title: String!
     description: String
@@ -179,6 +198,10 @@ type Query {
     appointmentsByBranchAndStatus(branchId: ID!, status: String!, requesterId: ID!): [Appointment!]!
 
     receptionistsByBranch(branchId: ID!): [Doctor!]!
+
+    getActivityLogsById(entityType: String, entityId: String): [ActivityLogResponseDTO!]
+    getActivityLogsByType(entityType: String!): [ActivityLogResponseDTO!]
+    getActivityLogs: [ActivityLogResponseDTO!]
 }
 
 type Mutation {

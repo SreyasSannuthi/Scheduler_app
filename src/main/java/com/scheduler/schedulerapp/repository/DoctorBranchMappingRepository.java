@@ -13,4 +13,7 @@ public interface DoctorBranchMappingRepository extends MongoRepository<StaffBran
     List<StaffBranchMapping> findByBranchId(String branchId);
     Optional<StaffBranchMapping> findByDoctorIdAndBranchId(String doctorId, String branchId);
     void deleteByDoctorIdAndBranchId(String doctorId, String branchId);
+
+    int countByDoctorId(String id);
+    int countByBranchId(String id);
 }

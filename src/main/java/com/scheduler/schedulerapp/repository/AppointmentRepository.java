@@ -42,4 +42,6 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
 
     @Query("{ 'branchId': ?0, 'doctorId': { $in: ?1 } }")
     List<Appointment> findByBranchIdAndDoctorIds(String branchId, List<String> doctorIds);
+
+    int countByDoctorId(String id);
 }

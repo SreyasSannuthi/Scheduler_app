@@ -6,6 +6,8 @@ import com.scheduler.schedulerapp.model.Appointment;
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
 import com.scheduler.schedulerapp.repository.AppointmentRepository;
+import com.scheduler.schedulerapp.service.activitylogservice.ActivityLogService;
+import com.scheduler.schedulerapp.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,6 +29,12 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Autowired
     private AppointmentRepository appointmentRepository;
+
+    @Autowired
+    private ActivityLogService activityLogService;
+
+    @Autowired
+    private AuthService authService;
 
     @Override
     public List<HospitalStaff> getAllDoctors() {
@@ -69,10 +78,33 @@ public class DoctorServiceImpl implements DoctorService {
 
         if (doctor.getIsActive() != null && !doctor.getIsActive().equals(existingDoctor.getIsActive())) {
             if (!doctor.getIsActive()) {
+                String impactSummary;
+                if("DOCTOR".equalsIgnoreCase(existingDoctor.getRole())) {
+                    impactSummary = String.format("%d appointments cancelled, %d mappings removed", appointmentRepository.countByDoctorId(id), doctorBranchMappingRepository.countByDoctorId(id));
+                }
+                else{
+                    impactSummary= String.format("%d mappings removed", doctorBranchMappingRepository.countByDoctorId(id));
+                }
+                activityLogService.logDoctorDeactivation(
+                        id,
+                        doctor.getName(),
+                        authService.getCurrentUserId(),
+                        authService.getCurrentUserName(),
+                        impactSummary
+                );
+
                 doctor.setEndDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd yyyy '-' h:mm a")));
                 removeDoctorMappingsAndAppointments(id);
                 System.out.println("Doctor " + doctor.getName() + " deactivated at: " + doctor.getEndDate());
             } else {
+
+                activityLogService.logDoctorReactivation(
+                        id,
+                        doctor.getName(),
+                        authService.getCurrentUserId(),
+                        authService.getCurrentUserName()
+                );
+
                 doctor.setStartDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd yyyy '-' h:mm a")));
                 doctor.setEndDate("");
                 System.out.println("Doctor " + doctor.getName() + " reactivated. Previous end date preserved: " + existingDoctor.getEndDate());
@@ -93,7 +125,20 @@ public class DoctorServiceImpl implements DoctorService {
             doctor.setIsActive(false);
             doctor.setEndDate(LocalDateTime.now().format(DateTimeFormatter.ofPattern("MMMM dd yyyy '-' h:mm a")));
 
-            removeDoctorMappingsAndAppointments(id);
+            String impactSummary = String.format("Doctor deactivated with %d appointments and %d mappings affected",
+                    appointmentRepository.countByDoctorId(id),
+                    doctorBranchMappingRepository.countByDoctorId(id)
+            );
+
+            activityLogService.logDoctorDeactivation(
+                    id,
+                    doctor.getName(),
+                    authService.getCurrentUserId(),
+                    authService.getCurrentUserName(),
+                    impactSummary
+            );
+
+            removeDoctorBranchMappings(id);
 
             doctorRepository.save(doctor);
 

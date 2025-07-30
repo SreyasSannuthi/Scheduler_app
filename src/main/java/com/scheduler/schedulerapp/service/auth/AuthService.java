@@ -5,4 +5,7 @@ import com.scheduler.schedulerapp.dto.AuthResponseDTO;
 
 public interface AuthService {
     AuthResponseDTO authenticate(AuthRequestDTO request);
+
+    String getCurrentUserId();
+    String getCurrentUserName();
 }

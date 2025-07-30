@@ -5,6 +5,8 @@ import com.scheduler.schedulerapp.model.StaffBranchMapping;
 import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
+import com.scheduler.schedulerapp.service.activitylogservice.ActivityLogService;
+import com.scheduler.schedulerapp.service.auth.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +24,12 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
 
     @Autowired
     private HospitalBranchRepository hospitalBranchRepository;
+
+    @Autowired
+    private ActivityLogService activityLogService;
+
+    @Autowired
+    private AuthService authService;
 
     @Override
     public StaffBranchMapping assignDoctorToBranch(DoctorBranchMappingInputDTO input) {
@@ -46,6 +54,16 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
         mapping.setBranchId(input.getBranchId());
         mapping.setDoctorName(input.getDoctorName());
         mapping.setBranchCode(input.getBranchCode());
+
+        activityLogService.logMappingCreated(
+                mapping.getId(),
+                mapping.getDoctorId(),
+                mapping.getDoctorName(),
+                mapping.getBranchId(),
+                mapping.getBranchCode(),
+                authService.getCurrentUserId(),
+                authService.getCurrentUserName()
+        );
 
         return mappingRepository.save(mapping);
     }
@@ -72,12 +90,23 @@ public class DoctorBranchMappingServiceImpl implements DoctorBranchMappingServic
 
     @Override
     public void removeDoctorFromBranch(String doctorId, String branchId) {
-        Optional<StaffBranchMapping> mapping = mappingRepository
+        Optional<StaffBranchMapping> mappingOpt = mappingRepository
                 .findByDoctorIdAndBranchId(doctorId, branchId);
 
-        if (mapping.isEmpty()) {
+        if (mappingOpt.isEmpty()) {
             throw new RuntimeException("Doctor is not assigned to this branch");
         }
+
+        StaffBranchMapping mapping = mappingOpt.get();
+
+        activityLogService.logMappingRemoved(
+                doctorId,
+                mapping.getDoctorName(),
+                branchId,
+                mapping.getBranchCode(),
+                authService.getCurrentUserId(),
+                authService.getCurrentUserName()
+        );
 
         mappingRepository.deleteByDoctorIdAndBranchId(doctorId, branchId);
     }
