@@ -36,6 +36,7 @@ com/scheduler/schedulerapp/service/activitylogservice/ActivityLogService.class
 com/scheduler/schedulerapp/model/HospitalBranch.class
 com/scheduler/schedulerapp/service/doctor/DoctorServiceImpl.class
 com/scheduler/schedulerapp/service/doctor/DoctorService.class
+com/scheduler/schedulerapp/dto/PatientUpdateInputDTO.class
 com/scheduler/schedulerapp/dto/AuthResponseDTO.class
 com/scheduler/schedulerapp/model/ActivityLog.class
 com/scheduler/schedulerapp/dto/SignupResponseDTO.class

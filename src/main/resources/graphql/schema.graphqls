@@ -15,6 +15,7 @@ type Patient {
     phoneNumber: String!
     age: Int!
     role: String!
+    isActive: Boolean
 }
 
 type Appointment {
@@ -124,6 +125,14 @@ input DoctorUpdateInput {
     isActive: Boolean
 }
 
+input PatientUpdateInput {
+    name: String
+    email: String
+    phoneNumber: String
+    age: Int
+    isActive: Boolean
+}
+
 input PatientSignupInput {
     name: String!
     email: String!
@@ -215,6 +224,7 @@ type Mutation {
     updateDoctor(id: ID!, input: DoctorUpdateInput!): Doctor!
 
     deletePatient(id: ID!): Boolean!
+    updatePatient(id: ID!, input: PatientUpdateInput!): Patient!
 
     createAppointment(input: AppointmentInput!): Appointment!
     updateAppointment(id: ID!, input: AppointmentUpdateInput!, requesterId: ID!): Appointment!

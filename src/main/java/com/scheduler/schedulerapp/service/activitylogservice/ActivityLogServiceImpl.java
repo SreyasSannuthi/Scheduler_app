@@ -3,6 +3,7 @@ package com.scheduler.schedulerapp.service.activitylogservice;
 import com.scheduler.schedulerapp.model.ActivityLog;
 import com.scheduler.schedulerapp.model.HospitalBranch;
 import com.scheduler.schedulerapp.repository.ActivityLogRepository;
+import com.scheduler.schedulerapp.repository.AppointmentRepository;
 import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,9 @@ public class ActivityLogServiceImpl implements ActivityLogService {
 
     @Autowired
     private HospitalBranchRepository hospitalBranchRepository;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
 
     @Override

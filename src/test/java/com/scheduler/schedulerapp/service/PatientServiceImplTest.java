@@ -34,10 +34,12 @@ class PatientServiceImplTest {
 
     @BeforeEach
     void setUp() {
-        patient1 = new Patient("1", "John Smith", "john.smith@email.com", "9876543210", 25, "patient", "patient123");
-        patient2 = new Patient("2", "Jane Doe", "jane.doe@email.com", "9876543211", 30, "patient", "patient123");
-        patient3 = new Patient("3", "Bob Wilson", "bob.wilson@email.com", "9876543212", 35, "patient", "patient123");
-        adminPatient = new Patient("4", "Admin User", "admin@email.com", "9876543213", 40, "admin", "admin123");
+        patient1 = new Patient("1", "John Smith", "john.smith@email.com", "9876543210", 25, "patient", "patient123",
+                true);
+        patient2 = new Patient("2", "Jane Doe", "jane.doe@email.com", "9876543211", 30, "patient", "patient123", true);
+        patient3 = new Patient("3", "Bob Wilson", "bob.wilson@email.com", "9876543212", 35, "patient", "patient123",
+                true);
+        adminPatient = new Patient("4", "Admin User", "admin@email.com", "9876543213", 40, "admin", "admin123", true);
     }
 
     @Test
@@ -133,9 +135,9 @@ class PatientServiceImplTest {
     @Test
     void createPatient_ShouldSaveAndReturnPatient() {
         Patient newPatient = new Patient(null, "New Patient", "new.patient@email.com", "9876543214", 28, "patient",
-                "patient123");
+                "patient123", true);
         Patient savedPatient = new Patient("5", "New Patient", "new.patient@email.com", "9876543214", 28, "patient",
-                "patient123");
+                "patient123", true);
         when(patientRepository.save(any(Patient.class))).thenReturn(savedPatient);
         Patient result = patientService.createPatient(newPatient);
         assertNotNull(result);
@@ -160,9 +162,9 @@ class PatientServiceImplTest {
     void updatePatient_ShouldSetIdAndSavePatient() {
         String patientId = "1";
         Patient updatedPatientInput = new Patient("999", "Updated Name", "updated@email.com", "9999999999", 35, "admin",
-                "admin123");
+                "admin123", true);
         Patient savedPatient = new Patient("1", "Updated Name", "updated@email.com", "9999999999", 35, "admin",
-                "admin123");
+                "admin123", true);
         when(patientRepository.save(any(Patient.class))).thenReturn(savedPatient);
         Patient result = patientService.updatePatient(patientId, updatedPatientInput);
         assertNotNull(result);
@@ -180,9 +182,9 @@ class PatientServiceImplTest {
     void updatePatient_WithDifferentOriginalId_ShouldOverwriteIdAndSave() {
         String patientId = "1";
         Patient patientWithDifferentId = new Patient("999", "Different Patient", "different@email.com", "8888888888",
-                40, "patient", "patient123");
+                40, "patient", "patient123", true);
         Patient savedPatient = new Patient("1", "Different Patient", "different@email.com", "8888888888", 40, "patient",
-                "patient123");
+                "patient123", true);
         when(patientRepository.save(any(Patient.class))).thenReturn(savedPatient);
         Patient result = patientService.updatePatient(patientId, patientWithDifferentId);
         assertNotNull(result);

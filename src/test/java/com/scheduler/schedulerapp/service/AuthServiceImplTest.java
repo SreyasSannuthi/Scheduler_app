@@ -47,7 +47,7 @@ class AuthServiceImplTest {
     }
 
     private Patient patientUser(String email) {
-        return new Patient("1", "Jane Smith", email, "1234567890", 30, "patient", "encPwd");
+        return new Patient("1", "Jane Smith", email, "1234567890", 30, "patient", "encPwd", true);
     }
 
     @BeforeEach

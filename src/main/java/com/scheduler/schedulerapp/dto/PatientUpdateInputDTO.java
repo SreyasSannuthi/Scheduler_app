@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class PatientResponseDTO {
-    private String id;
+public class PatientUpdateInputDTO {
     private String name;
     private String email;
     private String phoneNumber;
     private Integer age;
-    private String role;
     private Boolean isActive;
 }

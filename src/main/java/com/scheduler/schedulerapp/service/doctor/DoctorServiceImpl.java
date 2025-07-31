@@ -38,7 +38,7 @@ public class DoctorServiceImpl implements DoctorService {
 
     @Override
     public List<HospitalStaff> getAllDoctors() {
-        return doctorRepository.findAllWhoIsActive();
+        return doctorRepository.findAll();
     }
 
     @Override
@@ -138,7 +138,7 @@ public class DoctorServiceImpl implements DoctorService {
                     impactSummary
             );
 
-            removeDoctorBranchMappings(id);
+            removeDoctorMappingsAndAppointments(id);
 
             doctorRepository.save(doctor);
 

@@ -178,22 +178,22 @@ public class DataSeedingService {
         private void seedPatients() {
                 if (patientRepository.count() == 0) {
                         List<Patient> patients = Arrays.asList(
-                                        new Patient(null, "Vibhor Gupta", "vibhor@gmail.com", "9876543210", 27,
+                                        new Patient(null, "Vibhor Gupta", "vibhor@gmail.com", "9876543210", 22,
                                                         "patient",
-                                                        passwordEncoder.encode("patient123")),
-                                        new Patient(null, "Arnav Saharan", "arnav@gmail.com", "9123456780", 30,
+                                                        passwordEncoder.encode("patient123"),true),
+                                        new Patient(null, "Arnav Saharan", "arnav@gmail.com", "9123456780", 21,
                                                         "patient",
-                                                        passwordEncoder.encode("patient123")),
-                                        new Patient(null, "Mayank Pal", "mayank@gmail.com", "9012345678", 26, "patient",
-                                                        passwordEncoder.encode("patient123")),
-                                        new Patient(null, "Shubradip Saha", "shubradip@gmail.com", "7890123456", 24,
+                                                        passwordEncoder.encode("patient123"),true),
+                                        new Patient(null, "Mayank Pal", "mayank@gmail.com", "9012345678", 23, "patient",
+                                                        passwordEncoder.encode("patient123"),true),
+                                        new Patient(null, "Shubradip Saha", "shubradip@gmail.com", "7890123456", 21,
                                                         "patient",
-                                                        passwordEncoder.encode("patient123")),
-                                        new Patient(null, "Prateek Jain", "prateek@gmail.com", "8001234567", 28,
+                                                        passwordEncoder.encode("patient123"),true),
+                                        new Patient(null, "Prateek Jain", "prateek@gmail.com", "8001234567", 22,
                                                         "patient",
-                                                        passwordEncoder.encode("patient123")),
-                                        new Patient(null, "Ankit Verma", "ankit@gmail.com", "9988776655", 32, "patient",
-                                                        passwordEncoder.encode("patient123")));
+                                                        passwordEncoder.encode("patient123"),true),
+                                        new Patient(null, "Ankit Verma", "ankit@gmail.com", "9988776655", 24, "patient",
+                                                        passwordEncoder.encode("patient123"),true));
 
                         patientRepository.saveAll(patients);
                         System.out.println(patients.size() + " patients added successfully");

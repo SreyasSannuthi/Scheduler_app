@@ -2,8 +2,10 @@ package com.scheduler.schedulerapp.service.hospitalbranch;
 
 import com.scheduler.schedulerapp.dto.HospitalBranchInputDTO;
 import com.scheduler.schedulerapp.dto.HospitalBranchUpdateInputDTO;
+import com.scheduler.schedulerapp.model.Appointment;
 import com.scheduler.schedulerapp.model.HospitalBranch;
 import com.scheduler.schedulerapp.model.StaffBranchMapping;
+import com.scheduler.schedulerapp.repository.AppointmentRepository;
 import com.scheduler.schedulerapp.repository.HospitalBranchRepository;
 import com.scheduler.schedulerapp.repository.DoctorBranchMappingRepository;
 import com.scheduler.schedulerapp.service.activitylogservice.ActivityLogService;
@@ -30,6 +32,9 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
 
     @Autowired
     private AuthService authService;
+
+    @Autowired
+    private AppointmentRepository appointmentRepository;
 
     @Override
     public HospitalBranch createBranch(HospitalBranchInputDTO input) {
@@ -114,6 +119,7 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
                         impactSummary
                 );
 
+                cancelAppointmentsInBranch(id);
                 removeDoctorMappingsForBranch(id);
             } else {
                 activityLogService.logBranchReactivation(
@@ -154,6 +160,7 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
                     impactSummary
             );
 
+            cancelAppointmentsInBranch(id);
             removeDoctorMappingsForBranch(id);
             hospitalBranchRepository.save(branch);
 
@@ -172,6 +179,19 @@ public class HospitalBranchServiceImpl implements HospitalBranchService {
         } catch (Exception e) {
             System.err.println("Error removing doctor mappings for branch " + branchId + ": " + e.getMessage());
             throw new RuntimeException("Failed to remove doctor mappings for branch: " + e.getMessage());
+        }
+    }
+
+    private void cancelAppointmentsInBranch(String branchId) {
+        List < Appointment> appointments = appointmentRepository.findByBranchId(branchId);
+        if (!appointments.isEmpty()) {
+            for(Appointment appointment:appointments){
+                appointment.setStatus("cancelled");
+                appointmentRepository.save(appointment);
+            }
+            System.out.println("Removed " + appointments.size() + " appointments for branch ID: " + branchId);
+        } else {
+            System.out.println("No appointments found for branch ID: " + branchId);
         }
     }
 }

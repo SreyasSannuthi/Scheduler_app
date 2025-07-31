@@ -42,19 +42,24 @@ class PatientResolverTest {
 
     @BeforeEach
     void setUp() {
-        patient1 = new Patient("1", "John Smith", "john.smith@email.com", "9876543210", 25, "patient", "patient123");
-        patient2 = new Patient("2", "Jane Doe", "jane.doe@email.com", "9876543211", 30, "patient","patient123");
-        adminPatient = new Patient("3", "Admin User", "admin@email.com", "9876543212", 40, "admin", "admin123");
+        patient1 = new Patient("1", "John Smith", "john.smith@email.com", "9876543210", 25, "patient", "patient123",
+                true);
+        patient2 = new Patient("2", "Jane Doe", "jane.doe@email.com", "9876543211", 30, "patient", "patient123", true);
+        adminPatient = new Patient("3", "Admin User", "admin@email.com", "9876543212", 40, "admin", "admin123", true);
 
-        patientResponseDTO1 = new PatientResponseDTO("1", "John Smith", "john.smith@email.com", "9876543210", 25, "patient");
-        patientResponseDTO2 = new PatientResponseDTO("2", "Jane Doe", "jane.doe@email.com", "9876543211", 30, "patient");
-        adminPatientResponseDTO = new PatientResponseDTO("3", "Admin User", "admin@email.com", "9876543212", 40, "admin");
+        patientResponseDTO1 = new PatientResponseDTO("1", "John Smith", "john.smith@email.com", "9876543210", 25,
+                "patient",true);
+        patientResponseDTO2 = new PatientResponseDTO("2", "Jane Doe", "jane.doe@email.com", "9876543211", 30,
+                "patient",true);
+        adminPatientResponseDTO = new PatientResponseDTO("3", "Admin User", "admin@email.com", "9876543212", 40,
+                "admin",true);
     }
 
     @Test
     void patients_WhenMultiplePatientsExist_ShouldReturnListOfPatientResponseDTO() {
         List<Patient> patients = Arrays.asList(patient1, patient2, adminPatient);
-        List<PatientResponseDTO> expectedDTOs = Arrays.asList(patientResponseDTO1, patientResponseDTO2, adminPatientResponseDTO);
+        List<PatientResponseDTO> expectedDTOs = Arrays.asList(patientResponseDTO1, patientResponseDTO2,
+                adminPatientResponseDTO);
         when(patientService.getAllPatients()).thenReturn(patients);
         when(dtoMapper.toPatientResponseDTO(patient1)).thenReturn(patientResponseDTO1);
         when(dtoMapper.toPatientResponseDTO(patient2)).thenReturn(patientResponseDTO2);

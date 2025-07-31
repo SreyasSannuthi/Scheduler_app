@@ -17,6 +17,7 @@
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/HospitalBranchUpdateInputDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/PatientResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/PatientSignupInputDTO.java
+/Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/PatientUpdateInputDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/dto/SignupResponseDTO.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/mapper/DTOMapper.java
 /Users/sreyas/Desktop/schedulerapp-backend/src/main/java/com/scheduler/schedulerapp/model/ActivityLog.java

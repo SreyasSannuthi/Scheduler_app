@@ -45,6 +45,7 @@ public class DTOMapper {
         dto.setPhoneNumber(patient.getPhoneNumber());
         dto.setAge(patient.getAge());
         dto.setRole(patient.getRole());
+        dto.setIsActive(patient.getIsActive());
         return dto;
     }
 
