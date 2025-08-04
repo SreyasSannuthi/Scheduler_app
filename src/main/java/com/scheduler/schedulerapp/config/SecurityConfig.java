@@ -40,7 +40,6 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
-                        // Allow GraphQL endpoint but JWT filter will handle authentication
                         .requestMatchers("/graphql").permitAll()
 
                         .requestMatchers("/graphiql/**", "/voyager.html").permitAll()

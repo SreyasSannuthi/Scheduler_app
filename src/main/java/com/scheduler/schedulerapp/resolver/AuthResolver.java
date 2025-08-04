@@ -19,14 +19,12 @@ public class AuthResolver {
 
     @MutationMapping
     public AuthResponseDTO login(@Argument String email, @Argument String password) {
-        // Login should work without authentication
         AuthRequestDTO request = new AuthRequestDTO(email, password);
         return authService.authenticate(request);
     }
 
     @QueryMapping
     public String getCurrentUser() {
-        // This requires authentication
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated() && !auth.getName().equals("anonymousUser")) {
             return auth.getName();

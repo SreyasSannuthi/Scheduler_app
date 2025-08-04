@@ -170,6 +170,111 @@ input DoctorBranchMappingInput {
     branchCode: String!
 }
 
+type PatientMedicalRecord {
+    id: ID!
+    patientId: ID!
+    createdAt: String!
+    updatedAt: String!
+    visitHistory: [VisitHistory!]!
+    personalInfo: PersonalMedicalInfo
+    medicalDocuments: [MedicalDocument!]!
+    analytics: HealthAnalytics
+}
+
+type VisitHistory {
+    appointmentId: ID!
+    visitDate: String!
+    doctorName: String!
+    branchLocation: String
+    reasonForVisit: String
+    symptoms: String
+    bloodPressure: String
+    temperature: Float
+    weight: Float
+    diagnosis: String
+    treatment: String
+    medications: String
+    doctorNotes: String
+    followUpRequired: Boolean
+    followUpDate: String
+    visitDuration: String
+}
+
+type PersonalMedicalInfo {
+    bloodType: String
+    height: Float
+    weight: Float
+    lastWeightUpdate: String
+    allergies: [String!]!
+    chronicConditions: [String!]!
+    currentMedications: [String!]!
+    emergencyContactName: String
+    emergencyContactPhone: String
+}
+
+type MedicalDocument {
+    documentId: ID!
+    fileName: String!
+    filePath: String!
+    fileSize: Int!
+    uploadDate: String!
+    uploadedBy: ID!
+    description: String
+}
+
+type WeightEntry {
+    date: String!
+    weight: Float!
+}
+
+type HealthAnalytics {
+    totalVisits: Int!
+    lastVisitDate: String
+    commonDiagnoses: [String!]!
+    weightHistory: [WeightEntry!]!
+    missedAppointments: Int!
+    averageVisitsPerMonth: Float
+    lastAnalyticsUpdate: String
+}
+
+input PersonalMedicalInfoInput {
+    bloodType: String
+    height: Float
+    weight: Float
+    allergies: [String!]!
+    chronicConditions: [String!]!
+    currentMedications: [String!]!
+    emergencyContactName: String
+    emergencyContactPhone: String
+}
+
+input VisitHistoryInput {
+    appointmentId: ID!
+    visitDate: String!
+    doctorName: String!
+    branchLocation: String
+    reasonForVisit: String
+    symptoms: String
+    bloodPressure: String
+    temperature: Float
+    weight: Float
+    diagnosis: String
+    treatment: String
+    medications: String
+    doctorNotes: String
+    followUpRequired: Boolean
+    followUpDate: String
+    visitDuration: String
+}
+
+input MedicalDocumentInput {
+    fileName: String!
+    description: String
+    fileContentBase64: String!
+    fileSize: Int!
+    mimeType: String!
+}
+
 type Query {
     getCurrentUser: String
     getCurrentUserRole: String
@@ -211,6 +316,12 @@ type Query {
     getActivityLogsById(entityType: String, entityId: String): [ActivityLogResponseDTO!]
     getActivityLogsByType(entityType: String!): [ActivityLogResponseDTO!]
     getActivityLogs: [ActivityLogResponseDTO!]
+
+    getPatientMedicalRecord(patientId: ID!): PatientMedicalRecord
+    getPatientHistory(patientId: ID!): [VisitHistory!]!
+    getPatientAnalytics(patientId: ID!): HealthAnalytics
+    getPatientPersonalInfo(patientId: ID!): PersonalMedicalInfo
+
 }
 
 type Mutation {
@@ -237,4 +348,9 @@ type Mutation {
 
     assignDoctorToBranch(input: DoctorBranchMappingInput!): DoctorBranchMapping!
     removeDoctorFromBranch(doctorId: ID!, branchId: ID!): Boolean!
+
+    updatePersonalInfo(patientId: ID!, input: PersonalMedicalInfoInput!): PersonalMedicalInfo!
+    addVisitHistory(patientId: ID!, input: VisitHistoryInput!): PatientMedicalRecord!
+    uploadDocument(patientId: ID!, input: MedicalDocumentInput!): MedicalDocument!
+
 }

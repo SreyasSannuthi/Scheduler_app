@@ -38,10 +38,6 @@ public interface AppointmentRepository extends MongoRepository<Appointment, Stri
 
     List<Appointment> findByBranchId(String branchId);
     List<Appointment> findByBranchIdAndStartTimeBetween(String branchId, LocalDateTime start, LocalDateTime end);
-    List<Appointment> findByBranchIdAndStatus(String branchId, String status);
-
-    @Query("{ 'branchId': ?0, 'doctorId': { $in: ?1 } }")
-    List<Appointment> findByBranchIdAndDoctorIds(String branchId, List<String> doctorIds);
 
     int countByDoctorId(String id);
 }

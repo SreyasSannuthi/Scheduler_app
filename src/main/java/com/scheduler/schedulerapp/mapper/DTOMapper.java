@@ -2,8 +2,10 @@ package com.scheduler.schedulerapp.mapper;
 
 import com.scheduler.schedulerapp.dto.*;
 
+import com.scheduler.schedulerapp.dto.recordtabdto.*;
 import com.scheduler.schedulerapp.model.*;
 
+import com.scheduler.schedulerapp.model.recordtab.*;
 import com.scheduler.schedulerapp.repository.DoctorRepository;
 import com.scheduler.schedulerapp.repository.PatientRepository;
 
@@ -11,8 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Optional;
+import java.util.List;
 
 @Component
 public class DTOMapper {
@@ -139,6 +143,107 @@ public class DTOMapper {
         dto.setStaffName(activityLog.getStaffName());
         dto.setBranchCode(activityLog.getBranchCode());
         dto.setBranchLocation(activityLog.getBranchLocation());
+        return dto;
+    }
+
+    public PatientMedicalRecordResponseDTO toPatientMedicalRecordResponseDTO(PatientMedicalRecord record) {
+        PatientMedicalRecordResponseDTO dto = new PatientMedicalRecordResponseDTO();
+        dto.setId(record.getId());
+        dto.setPatientId(record.getPatientId());
+        dto.setCreatedAt(record.getCreatedAt() != null ? record.getCreatedAt().toString() : null);
+        dto.setUpdatedAt(record.getUpdatedAt() != null ? record.getUpdatedAt().toString() : null);
+
+        dto.setPersonalInfo(toPersonalMedicalInfoResponseDTO(record.getPersonalInfo()) );
+
+        List<VisitHistoryResponseDTO> visitHistoryDTO = record.getVisitHistory()
+                .stream()
+                .map(this::toVisitHistoryResponseDTO)
+                .toList();
+        dto.setVisitHistory(visitHistoryDTO);
+
+        List <MedicalDocumentResponseDTO> medicalDocumentsDTO = record.getMedicalDocuments()
+                .stream()
+                .map(this::toMedicalDocumentResponseDTO)
+                .toList();
+
+        dto.setMedicalDocuments(medicalDocumentsDTO);
+
+        dto.setAnalytics(toHealthAnalyticsResponseDTO(record.getAnalytics()));
+        return dto;
+    }
+
+    public PersonalMedicalInfoResponseDTO toPersonalMedicalInfoResponseDTO(PersonalMedicalInfo personalInfo) {
+        PersonalMedicalInfoResponseDTO dto = new PersonalMedicalInfoResponseDTO();
+        dto.setBloodType(personalInfo.getBloodType());
+        dto.setHeight(personalInfo.getHeight());
+        dto.setWeight(personalInfo.getWeight());
+        dto.setLastWeightUpdate(personalInfo.getLastWeightUpdate() != null ? personalInfo.getLastWeightUpdate().toString() : null);
+        dto.setAllergies(personalInfo.getAllergies());
+        dto.setChronicConditions(personalInfo.getChronicConditions());
+        dto.setCurrentMedications(personalInfo.getCurrentMedications());
+        dto.setEmergencyContactName(personalInfo.getEmergencyContactName());
+        dto.setEmergencyContactPhone(personalInfo.getEmergencyContactPhone());
+        return dto;
+    }
+
+    public PersonalMedicalInfo toPersonalMedicalInfo(PersonalMedicalInfoInputDTO dto) {
+        PersonalMedicalInfo personalInfo = new PersonalMedicalInfo();
+        personalInfo.setBloodType(dto.getBloodType());
+        personalInfo.setHeight(dto.getHeight());
+        personalInfo.setWeight(dto.getWeight());
+        personalInfo.setAllergies(dto.getAllergies());
+        if (dto.getWeight() != null) {
+            personalInfo.setLastWeightUpdate(LocalDateTime.now());
+        }
+        personalInfo.setChronicConditions(dto.getChronicConditions());
+        personalInfo.setCurrentMedications(dto.getCurrentMedications());
+        personalInfo.setEmergencyContactName(dto.getEmergencyContactName());
+        personalInfo.setEmergencyContactPhone(dto.getEmergencyContactPhone());
+        return personalInfo;
+    }
+
+    public VisitHistoryResponseDTO toVisitHistoryResponseDTO(VisitHistory visitHistory) {
+        VisitHistoryResponseDTO dto = new VisitHistoryResponseDTO();
+        dto.setAppointmentId(visitHistory.getAppointmentId());
+        dto.setVisitDate(visitHistory.getVisitDate() != null ? visitHistory.getVisitDate().toString() : null);
+        dto.setDoctorName(visitHistory.getDoctorName());
+        dto.setBranchLocation(visitHistory.getBranchLocation());
+        dto.setReasonForVisit(visitHistory.getReasonForVisit());
+        dto.setSymptoms(visitHistory.getSymptoms());
+        dto.setBloodPressure(visitHistory.getBloodPressure());
+        dto.setTemperature(visitHistory.getTemperature());
+        dto.setWeight(visitHistory.getWeight());
+        dto.setDiagnosis(visitHistory.getDiagnosis());
+        dto.setTreatment(visitHistory.getTreatment());
+        dto.setMedications(visitHistory.getMedications());
+        dto.setDoctorNotes(visitHistory.getDoctorNotes());
+        dto.setFollowUpRequired(visitHistory.getFollowUpRequired());
+        dto.setFollowUpDate(visitHistory.getFollowUpDate() != null ? visitHistory.getFollowUpDate().toString() : null);
+        dto.setFollowUpInstructions(visitHistory.getFollowUpInstructions());
+        dto.setVisitDuration(visitHistory.getVisitDuration() != null ? visitHistory.getVisitDuration().toString() : null);
+
+        return dto;
+    }
+    public MedicalDocumentResponseDTO toMedicalDocumentResponseDTO(MedicalDocument document) {
+        MedicalDocumentResponseDTO dto = new MedicalDocumentResponseDTO();
+        dto.setDocumentId(document.getDocumentId());
+        dto.setFileName(document.getFileName());
+        dto.setFilePath(document.getFilePath());
+        dto.setFileSize(document.getFileSize());
+        dto.setUploadDate(document.getUploadDate() != null ? document.getUploadDate().toString() : null);
+        dto.setUploadedBy(document.getUploadedBy());
+        dto.setDescription(document.getDescription());
+        return dto;
+    }
+    public HealthAnalyticsResponseDTO toHealthAnalyticsResponseDTO(HealthAnalytics analytics) {
+        HealthAnalyticsResponseDTO dto = new HealthAnalyticsResponseDTO();
+        dto.setTotalVisits(analytics.getTotalVisits());
+        dto.setLastVisitDate(analytics.getLastVisitDate() != null ? analytics.getLastVisitDate().toString() : null);
+        dto.setCommonDiagnoses(analytics.getCommonDiagnoses());
+        dto.setMissedAppointments(analytics.getMissedAppointments());
+        dto.setWeightHistory(analytics.getWeightHistory());
+        dto.setAverageVisitsPerMonth(analytics.getAverageVisitsPerMonth());
+        dto.setLastAnalyticsUpdate(analytics.getLastAnalyticsUpdate() != null ? analytics.getLastAnalyticsUpdate().toString() : null);
         return dto;
     }
 }
